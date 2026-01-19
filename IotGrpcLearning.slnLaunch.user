@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "gRPC Learn",
+    "Projects": [
+      {
+        "Path": "IotGrpcLearning\\IotGrpcLearning.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "DeviceSimulator\\DeviceSimulator.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

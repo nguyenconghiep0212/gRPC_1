@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "aNeA91MepOs=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\DeviceSimulator\\DeviceSimulator.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\v-connguyen\\.nuget\\packages\\google.protobuf\\3.33.4\\google.protobuf.3.33.4.nupkg.sha512",
+    "C:\\Users\\v-connguyen\\.nuget\\packages\\grpc.core.api\\2.76.0\\grpc.core.api.2.76.0.nupkg.sha512",
+    "C:\\Users\\v-connguyen\\.nuget\\packages\\grpc.net.client\\2.76.0\\grpc.net.client.2.76.0.nupkg.sha512",
+    "C:\\Users\\v-connguyen\\.nuget\\packages\\grpc.net.common\\2.76.0\\grpc.net.common.2.76.0.nupkg.sha512",
+    "C:\\Users\\v-connguyen\\.nuget\\packages\\grpc.tools\\2.76.0\\grpc.tools.2.76.0.nupkg.sha512",
+    "C:\\Users\\v-connguyen\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.0\\microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "C:\\Users\\v-connguyen\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.0\\microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

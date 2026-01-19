@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="DeviceSimulator/DeviceSimulator.csproj" Id="f2d23581-27ec-47dd-af36-a1b423ee5c69" />
+  <Project Path="IotGrpcLearning/IotGrpcLearning.csproj" />
+</Solution>
