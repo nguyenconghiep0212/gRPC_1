@@ -46,21 +46,21 @@ namespace IotGrpcLearning {
     }
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Marshaller<global::IotGrpcLearning.DeviceHelloRequest> __Marshaller_iot_device_DeviceHelloRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.DeviceHelloRequest.Parser));
+    static readonly grpc::Marshaller<global::IotGrpcLearning.DeviceInitRequest> __Marshaller_iot_device_DeviceInitRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.DeviceInitRequest.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Marshaller<global::IotGrpcLearning.DeviceHelloResponse> __Marshaller_iot_device_DeviceHelloResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.DeviceHelloResponse.Parser));
+    static readonly grpc::Marshaller<global::IotGrpcLearning.DeviceInitResponse> __Marshaller_iot_device_DeviceInitResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.DeviceInitResponse.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::IotGrpcLearning.TelemetryPoint> __Marshaller_iot_device_TelemetryPoint = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.TelemetryPoint.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::IotGrpcLearning.TelemetryAck> __Marshaller_iot_device_TelemetryAck = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.TelemetryAck.Parser));
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Method<global::IotGrpcLearning.DeviceHelloRequest, global::IotGrpcLearning.DeviceHelloResponse> __Method_SayHello = new grpc::Method<global::IotGrpcLearning.DeviceHelloRequest, global::IotGrpcLearning.DeviceHelloResponse>(
+    static readonly grpc::Method<global::IotGrpcLearning.DeviceInitRequest, global::IotGrpcLearning.DeviceInitResponse> __Method_Init = new grpc::Method<global::IotGrpcLearning.DeviceInitRequest, global::IotGrpcLearning.DeviceInitResponse>(
         grpc::MethodType.Unary,
         __ServiceName,
-        "SayHello",
-        __Marshaller_iot_device_DeviceHelloRequest,
-        __Marshaller_iot_device_DeviceHelloResponse);
+        "Init",
+        __Marshaller_iot_device_DeviceInitRequest,
+        __Marshaller_iot_device_DeviceInitResponse);
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Method<global::IotGrpcLearning.TelemetryPoint, global::IotGrpcLearning.TelemetryAck> __Method_SendTelemetry = new grpc::Method<global::IotGrpcLearning.TelemetryPoint, global::IotGrpcLearning.TelemetryAck>(
@@ -87,7 +87,7 @@ namespace IotGrpcLearning {
       /// <param name="context">The context of the server-side call handler being invoked.</param>
       /// <returns>The response to send back to the client (wrapped by a task).</returns>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual global::System.Threading.Tasks.Task<global::IotGrpcLearning.DeviceHelloResponse> SayHello(global::IotGrpcLearning.DeviceHelloRequest request, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task<global::IotGrpcLearning.DeviceInitResponse> Init(global::IotGrpcLearning.DeviceInitRequest request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -112,7 +112,7 @@ namespace IotGrpcLearning {
     public static grpc::ServerServiceDefinition BindService(DeviceGatewayBase serviceImpl)
     {
       return grpc::ServerServiceDefinition.CreateBuilder()
-          .AddMethod(__Method_SayHello, serviceImpl.SayHello)
+          .AddMethod(__Method_Init, serviceImpl.Init)
           .AddMethod(__Method_SendTelemetry, serviceImpl.SendTelemetry).Build();
     }
 
@@ -123,7 +123,7 @@ namespace IotGrpcLearning {
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     public static void BindService(grpc::ServiceBinderBase serviceBinder, DeviceGatewayBase serviceImpl)
     {
-      serviceBinder.AddMethod(__Method_SayHello, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::IotGrpcLearning.DeviceHelloRequest, global::IotGrpcLearning.DeviceHelloResponse>(serviceImpl.SayHello));
+      serviceBinder.AddMethod(__Method_Init, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::IotGrpcLearning.DeviceInitRequest, global::IotGrpcLearning.DeviceInitResponse>(serviceImpl.Init));
       serviceBinder.AddMethod(__Method_SendTelemetry, serviceImpl == null ? null : new grpc::ClientStreamingServerMethod<global::IotGrpcLearning.TelemetryPoint, global::IotGrpcLearning.TelemetryAck>(serviceImpl.SendTelemetry));
     }
 

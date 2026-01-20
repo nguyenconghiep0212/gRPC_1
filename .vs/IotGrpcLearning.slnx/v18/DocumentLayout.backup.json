@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{313AC783-D2B5-DF87-BF40-38D41C8F3957}|IotGrpcLearning\\IotGrpcLearning.csproj|c:\\users\\v-connguyen\\source\\repos\\iotgrpclearning\\iotgrpclearning\\services\\greeterservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{313AC783-D2B5-DF87-BF40-38D41C8F3957}|IotGrpcLearning\\IotGrpcLearning.csproj|solutionrelative:iotgrpclearning\\services\\greeterservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F2D23581-27EC-47DD-AF36-A1B423EE5C69}|DeviceSimulator\\DeviceSimulator.csproj|c:\\users\\v-connguyen\\source\\repos\\iotgrpclearning\\devicesimulator\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F2D23581-27EC-47DD-AF36-A1B423EE5C69}|DeviceSimulator\\DeviceSimulator.csproj|solutionrelative:devicesimulator\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{313AC783-D2B5-DF87-BF40-38D41C8F3957}|IotGrpcLearning\\IotGrpcLearning.csproj|c:\\users\\v-connguyen\\source\\repos\\iotgrpclearning\\iotgrpclearning\\services\\deviceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{313AC783-D2B5-DF87-BF40-38D41C8F3957}|IotGrpcLearning\\IotGrpcLearning.csproj|solutionrelative:iotgrpclearning\\services\\deviceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{313AC783-D2B5-DF87-BF40-38D41C8F3957}|IotGrpcLearning\\IotGrpcLearning.csproj|c:\\users\\v-connguyen\\source\\repos\\iotgrpclearning\\iotgrpclearning\\services\\devicegatewayservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{313AC783-D2B5-DF87-BF40-38D41C8F3957}|IotGrpcLearning\\IotGrpcLearning.csproj|solutionrelative:iotgrpclearning\\services\\devicegatewayservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{313AC783-D2B5-DF87-BF40-38D41C8F3957}|IotGrpcLearning\\IotGrpcLearning.csproj|c:\\users\\v-connguyen\\source\\repos\\iotgrpclearning\\iotgrpclearning\\protos\\device.proto||{3B902123-F8A7-4915-9F01-361F908088D0}",
@@ -19,8 +19,12 @@
       "RelativeMoniker": "D:0:0:{313AC783-D2B5-DF87-BF40-38D41C8F3957}|IotGrpcLearning\\IotGrpcLearning.csproj|solutionrelative:iotgrpclearning\\protos\\greet.proto||{3B902123-F8A7-4915-9F01-361F908088D0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{313AC783-D2B5-DF87-BF40-38D41C8F3957}|IotGrpcLearning\\IotGrpcLearning.csproj|c:\\users\\v-connguyen\\source\\repos\\iotgrpclearning\\iotgrpclearning\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{313AC783-D2B5-DF87-BF40-38D41C8F3957}|IotGrpcLearning\\IotGrpcLearning.csproj|solutionrelative:iotgrpclearning\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{313AC783-D2B5-DF87-BF40-38D41C8F3957}|IotGrpcLearning\\IotGrpcLearning.csproj|c:\\users\\v-connguyen\\source\\repos\\iotgrpclearning\\iotgrpclearning\\services\\greeterservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{313AC783-D2B5-DF87-BF40-38D41C8F3957}|IotGrpcLearning\\IotGrpcLearning.csproj|solutionrelative:iotgrpclearning\\services\\greeterservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F2D23581-27EC-47DD-AF36-A1B423EE5C69}|DeviceSimulator\\DeviceSimulator.csproj|c:\\users\\v-connguyen\\source\\repos\\iotgrpclearning\\devicesimulator\\devicesimulator.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{F2D23581-27EC-47DD-AF36-A1B423EE5C69}|DeviceSimulator\\DeviceSimulator.csproj|solutionrelative:devicesimulator\\devicesimulator.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{313AC783-D2B5-DF87-BF40-38D41C8F3957}|IotGrpcLearning\\IotGrpcLearning.csproj|c:\\users\\v-connguyen\\source\\repos\\iotgrpclearning\\iotgrpclearning\\iotgrpclearning.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
@@ -31,12 +35,8 @@
       "RelativeMoniker": "D:0:0:{313AC783-D2B5-DF87-BF40-38D41C8F3957}|IotGrpcLearning\\IotGrpcLearning.csproj|solutionrelative:iotgrpclearning\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F2D23581-27EC-47DD-AF36-A1B423EE5C69}|DeviceSimulator\\DeviceSimulator.csproj|c:\\users\\v-connguyen\\source\\repos\\iotgrpclearning\\devicesimulator\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F2D23581-27EC-47DD-AF36-A1B423EE5C69}|DeviceSimulator\\DeviceSimulator.csproj|solutionrelative:devicesimulator\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F2D23581-27EC-47DD-AF36-A1B423EE5C69}|DeviceSimulator\\DeviceSimulator.csproj|c:\\users\\v-connguyen\\source\\repos\\iotgrpclearning\\devicesimulator\\devicesimulator.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{F2D23581-27EC-47DD-AF36-A1B423EE5C69}|DeviceSimulator\\DeviceSimulator.csproj|solutionrelative:devicesimulator\\devicesimulator.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+      "AbsoluteMoniker": "D:0:0:{313AC783-D2B5-DF87-BF40-38D41C8F3957}|IotGrpcLearning\\IotGrpcLearning.csproj|c:\\users\\v-connguyen\\source\\repos\\iotgrpclearning\\iotgrpclearning\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{313AC783-D2B5-DF87-BF40-38D41C8F3957}|IotGrpcLearning\\IotGrpcLearning.csproj|solutionrelative:iotgrpclearning\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{313AC783-D2B5-DF87-BF40-38D41C8F3957}|IotGrpcLearning\\IotGrpcLearning.csproj|c:\\users\\v-connguyen\\source\\repos\\iotgrpclearning\\iotgrpclearning\\iotgrpclearning.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
@@ -50,11 +50,11 @@
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
-      "VerticalTabListWidth": 191,
+      "VerticalTabListWidth": 181,
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 13,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Bookmark",
@@ -74,15 +74,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 8,
               "Title": "launchSettings.json",
               "DocumentMoniker": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\IotGrpcLearning\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "IotGrpcLearning\\Properties\\launchSettings.json",
               "ToolTip": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\IotGrpcLearning\\Properties\\launchSettings.json",
               "RelativeToolTip": "IotGrpcLearning\\Properties\\launchSettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAuAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-01-19T04:07:36.786Z"
+              "WhenOpened": "2026-01-19T04:07:36.786Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -93,7 +94,8 @@
               "ToolTip": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\IotGrpcLearning\\IotGrpcLearning.csproj",
               "RelativeToolTip": "IotGrpcLearning\\IotGrpcLearning.csproj",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-01-19T04:07:21.6Z"
+              "WhenOpened": "2026-01-19T04:07:21.6Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -109,37 +111,39 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 5,
               "Title": "DeviceSimulator.csproj",
               "DocumentMoniker": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\DeviceSimulator\\DeviceSimulator.csproj",
               "RelativeDocumentMoniker": "DeviceSimulator\\DeviceSimulator.csproj",
               "ToolTip": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\DeviceSimulator\\DeviceSimulator.csproj",
               "RelativeToolTip": "DeviceSimulator\\DeviceSimulator.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAjAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-01-19T04:01:53.087Z"
+              "WhenOpened": "2026-01-19T04:01:53.087Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 0,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\DeviceSimulator\\Program.cs",
               "RelativeDocumentMoniker": "DeviceSimulator\\Program.cs",
               "ToolTip": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\DeviceSimulator\\Program.cs",
               "RelativeToolTip": "DeviceSimulator\\Program.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABIAAAAIAAAAAAAAAA==",
+              "ViewState": "AgIAACgAAAAAAAAAAAAQwDkAAAB3AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-19T03:40:23.979Z"
+              "WhenOpened": "2026-01-19T03:40:23.979Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "DeviceService.cs",
-              "DocumentMoniker": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\IotGrpcLearning\\Services\\DeviceService.cs",
-              "RelativeDocumentMoniker": "IotGrpcLearning\\Services\\DeviceService.cs",
-              "ToolTip": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\IotGrpcLearning\\Services\\DeviceService.cs",
-              "RelativeToolTip": "IotGrpcLearning\\Services\\DeviceService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC8AAAAXAAAAAAAAAA==",
+              "Title": "DeviceGatewayService.cs",
+              "DocumentMoniker": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\IotGrpcLearning\\Services\\DeviceGatewayService.cs",
+              "RelativeDocumentMoniker": "IotGrpcLearning\\Services\\DeviceGatewayService.cs",
+              "ToolTip": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\IotGrpcLearning\\Services\\DeviceGatewayService.cs",
+              "RelativeToolTip": "IotGrpcLearning\\Services\\DeviceGatewayService.cs",
+              "ViewState": "AgIAADIAAAAAAAAAAAAowEMAAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-19T03:22:24.624Z",
               "EditorCaption": ""
@@ -154,11 +158,12 @@
               "RelativeToolTip": "IotGrpcLearning\\Protos\\greet.proto",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003853|",
-              "WhenOpened": "2026-01-19T03:20:50.589Z"
+              "WhenOpened": "2026-01-19T03:20:50.589Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "IotGrpcLearning.csproj",
               "DocumentMoniker": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\IotGrpcLearning\\IotGrpcLearning.csproj",
               "RelativeDocumentMoniker": "IotGrpcLearning\\IotGrpcLearning.csproj",
@@ -166,7 +171,8 @@
               "RelativeToolTip": "IotGrpcLearning\\IotGrpcLearning.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-01-19T03:11:14.155Z"
+              "WhenOpened": "2026-01-19T03:11:14.155Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -176,38 +182,36 @@
               "RelativeDocumentMoniker": "IotGrpcLearning\\Protos\\device.proto",
               "ToolTip": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\IotGrpcLearning\\Protos\\device.proto",
               "RelativeToolTip": "IotGrpcLearning\\Protos\\device.proto",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAbAAAAAAAAAA==",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAACMAAAALAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003853|",
-              "WhenOpened": "2026-01-19T03:04:50.697Z"
+              "WhenOpened": "2026-01-19T03:04:50.697Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 4,
               "Title": "GreeterService.cs",
               "DocumentMoniker": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\IotGrpcLearning\\Services\\GreeterService.cs",
               "RelativeDocumentMoniker": "IotGrpcLearning\\Services\\GreeterService.cs",
               "ToolTip": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\IotGrpcLearning\\Services\\GreeterService.cs",
               "RelativeToolTip": "IotGrpcLearning\\Services\\GreeterService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAZAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-17T06:55:36.329Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\IotGrpcLearning\\Program.cs",
               "RelativeDocumentMoniker": "IotGrpcLearning\\Program.cs",
               "ToolTip": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\IotGrpcLearning\\Program.cs",
               "RelativeToolTip": "IotGrpcLearning\\Program.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-17T06:51:13.816Z"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+              "WhenOpened": "2026-01-17T06:51:13.816Z",
+              "EditorCaption": ""
             }
           ]
         }

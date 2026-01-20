@@ -24,25 +24,25 @@ namespace IotGrpcLearning {
     static DeviceReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "CgxkZXZpY2UucHJvdG8SCmlvdC5kZXZpY2UiOwoSRGV2aWNlSGVsbG9SZXF1",
-            "ZXN0EhEKCWRldmljZV9pZBgBIAEoCRISCgpmd192ZXJzaW9uGAIgASgJIj4K",
-            "E0RldmljZUhlbGxvUmVzcG9uc2USDwoHbWVzc2FnZRgBIAEoCRIWCg5zZXJ2",
-            "ZXJfdW5peF9tcxgCIAEoAyK0AQoOVGVsZW1ldHJ5UG9pbnQSEQoJZGV2aWNl",
-            "X2lkGAEgASgJEg4KBm1ldHJpYxgCIAEoCRINCgV2YWx1ZRgDIAEoARIPCgd1",
-            "bml4X21zGAQgASgDEjIKBHRhZ3MYBSADKAsyJC5pb3QuZGV2aWNlLlRlbGVt",
-            "ZXRyeVBvaW50LlRhZ3NFbnRyeRorCglUYWdzRW50cnkSCwoDa2V5GAEgASgJ",
-            "Eg0KBXZhbHVlGAIgASgJOgI4ASJACgxUZWxlbWV0cnlBY2sSEAoIYWNjZXB0",
-            "ZWQYASABKAUSEAoIcmVqZWN0ZWQYAiABKAUSDAoEbm90ZRgDIAEoCTKlAQoN",
-            "RGV2aWNlR2F0ZXdheRJLCghTYXlIZWxsbxIeLmlvdC5kZXZpY2UuRGV2aWNl",
-            "SGVsbG9SZXF1ZXN0Gh8uaW90LmRldmljZS5EZXZpY2VIZWxsb1Jlc3BvbnNl",
-            "EkcKDVNlbmRUZWxlbWV0cnkSGi5pb3QuZGV2aWNlLlRlbGVtZXRyeVBvaW50",
-            "GhguaW90LmRldmljZS5UZWxlbWV0cnlBY2soAUISqgIPSW90R3JwY0xlYXJu",
-            "aW5nYgZwcm90bzM="));
+            "CgxkZXZpY2UucHJvdG8SCmlvdC5kZXZpY2UiOgoRRGV2aWNlSW5pdFJlcXVl",
+            "c3QSEQoJZGV2aWNlX2lkGAEgASgJEhIKCmZ3X3ZlcnNpb24YAiABKAkiPQoS",
+            "RGV2aWNlSW5pdFJlc3BvbnNlEg8KB21lc3NhZ2UYASABKAkSFgoOc2VydmVy",
+            "X3VuaXhfbXMYAiABKAMitAEKDlRlbGVtZXRyeVBvaW50EhEKCWRldmljZV9p",
+            "ZBgBIAEoCRIOCgZtZXRyaWMYAiABKAkSDQoFdmFsdWUYAyABKAESDwoHdW5p",
+            "eF9tcxgEIAEoAxIyCgR0YWdzGAUgAygLMiQuaW90LmRldmljZS5UZWxlbWV0",
+            "cnlQb2ludC5UYWdzRW50cnkaKwoJVGFnc0VudHJ5EgsKA2tleRgBIAEoCRIN",
+            "CgV2YWx1ZRgCIAEoCToCOAEiQAoMVGVsZW1ldHJ5QWNrEhAKCGFjY2VwdGVk",
+            "GAEgASgFEhAKCHJlamVjdGVkGAIgASgFEgwKBG5vdGUYAyABKAkynwEKDURl",
+            "dmljZUdhdGV3YXkSRQoESW5pdBIdLmlvdC5kZXZpY2UuRGV2aWNlSW5pdFJl",
+            "cXVlc3QaHi5pb3QuZGV2aWNlLkRldmljZUluaXRSZXNwb25zZRJHCg1TZW5k",
+            "VGVsZW1ldHJ5EhouaW90LmRldmljZS5UZWxlbWV0cnlQb2ludBoYLmlvdC5k",
+            "ZXZpY2UuVGVsZW1ldHJ5QWNrKAFCEqoCD0lvdEdycGNMZWFybmluZ2IGcHJv",
+            "dG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::IotGrpcLearning.DeviceHelloRequest), global::IotGrpcLearning.DeviceHelloRequest.Parser, new[]{ "DeviceId", "FwVersion" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::IotGrpcLearning.DeviceHelloResponse), global::IotGrpcLearning.DeviceHelloResponse.Parser, new[]{ "Message", "ServerUnixMs" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::IotGrpcLearning.DeviceInitRequest), global::IotGrpcLearning.DeviceInitRequest.Parser, new[]{ "DeviceId", "FwVersion" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::IotGrpcLearning.DeviceInitResponse), global::IotGrpcLearning.DeviceInitResponse.Parser, new[]{ "Message", "ServerUnixMs" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::IotGrpcLearning.TelemetryPoint), global::IotGrpcLearning.TelemetryPoint.Parser, new[]{ "DeviceId", "Metric", "Value", "UnixMs", "Tags" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
             new pbr::GeneratedClrTypeInfo(typeof(global::IotGrpcLearning.TelemetryAck), global::IotGrpcLearning.TelemetryAck.Parser, new[]{ "Accepted", "Rejected", "Note" }, null, null, null, null)
           }));
@@ -55,16 +55,16 @@ namespace IotGrpcLearning {
   /// A device greets the gateway once it connects
   /// </summary>
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-  public sealed partial class DeviceHelloRequest : pb::IMessage<DeviceHelloRequest>
+  public sealed partial class DeviceInitRequest : pb::IMessage<DeviceInitRequest>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<DeviceHelloRequest> _parser = new pb::MessageParser<DeviceHelloRequest>(() => new DeviceHelloRequest());
+    private static readonly pb::MessageParser<DeviceInitRequest> _parser = new pb::MessageParser<DeviceInitRequest>(() => new DeviceInitRequest());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<DeviceHelloRequest> Parser { get { return _parser; } }
+    public static pb::MessageParser<DeviceInitRequest> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -80,7 +80,7 @@ namespace IotGrpcLearning {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public DeviceHelloRequest() {
+    public DeviceInitRequest() {
       OnConstruction();
     }
 
@@ -88,7 +88,7 @@ namespace IotGrpcLearning {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public DeviceHelloRequest(DeviceHelloRequest other) : this() {
+    public DeviceInitRequest(DeviceInitRequest other) : this() {
       deviceId_ = other.deviceId_;
       fwVersion_ = other.fwVersion_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -96,8 +96,8 @@ namespace IotGrpcLearning {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public DeviceHelloRequest Clone() {
-      return new DeviceHelloRequest(this);
+    public DeviceInitRequest Clone() {
+      return new DeviceInitRequest(this);
     }
 
     /// <summary>Field number for the "device_id" field.</summary>
@@ -133,12 +133,12 @@ namespace IotGrpcLearning {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as DeviceHelloRequest);
+      return Equals(other as DeviceInitRequest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(DeviceHelloRequest other) {
+    public bool Equals(DeviceInitRequest other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -224,7 +224,7 @@ namespace IotGrpcLearning {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(DeviceHelloRequest other) {
+    public void MergeFrom(DeviceInitRequest other) {
       if (other == null) {
         return;
       }
@@ -296,16 +296,16 @@ namespace IotGrpcLearning {
   }
 
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-  public sealed partial class DeviceHelloResponse : pb::IMessage<DeviceHelloResponse>
+  public sealed partial class DeviceInitResponse : pb::IMessage<DeviceInitResponse>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<DeviceHelloResponse> _parser = new pb::MessageParser<DeviceHelloResponse>(() => new DeviceHelloResponse());
+    private static readonly pb::MessageParser<DeviceInitResponse> _parser = new pb::MessageParser<DeviceInitResponse>(() => new DeviceInitResponse());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<DeviceHelloResponse> Parser { get { return _parser; } }
+    public static pb::MessageParser<DeviceInitResponse> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -321,7 +321,7 @@ namespace IotGrpcLearning {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public DeviceHelloResponse() {
+    public DeviceInitResponse() {
       OnConstruction();
     }
 
@@ -329,7 +329,7 @@ namespace IotGrpcLearning {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public DeviceHelloResponse(DeviceHelloResponse other) : this() {
+    public DeviceInitResponse(DeviceInitResponse other) : this() {
       message_ = other.message_;
       serverUnixMs_ = other.serverUnixMs_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -337,8 +337,8 @@ namespace IotGrpcLearning {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public DeviceHelloResponse Clone() {
-      return new DeviceHelloResponse(this);
+    public DeviceInitResponse Clone() {
+      return new DeviceInitResponse(this);
     }
 
     /// <summary>Field number for the "message" field.</summary>
@@ -374,12 +374,12 @@ namespace IotGrpcLearning {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as DeviceHelloResponse);
+      return Equals(other as DeviceInitResponse);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(DeviceHelloResponse other) {
+    public bool Equals(DeviceInitResponse other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -465,7 +465,7 @@ namespace IotGrpcLearning {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(DeviceHelloResponse other) {
+    public void MergeFrom(DeviceInitResponse other) {
       if (other == null) {
         return;
       }

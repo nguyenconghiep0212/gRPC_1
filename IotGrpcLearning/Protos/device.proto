@@ -5,19 +5,19 @@ package iot.device;
 
 service DeviceGateway {
   // Unary hello (already implemented)
-  rpc SayHello (DeviceHelloRequest) returns (DeviceHelloResponse);
+  rpc Init (DeviceInitRequest) returns (DeviceInitResponse);
 
   // NEW: client-streaming telemetry → single ack
   rpc SendTelemetry (stream TelemetryPoint) returns (TelemetryAck);
 }
 
 // A device greets the gateway once it connects
-message DeviceHelloRequest {
+message DeviceInitRequest {
   string device_id = 1;   // e.g., "peg-plant1-line3-robot7"
   string fw_version = 2;  // firmware version, e.g., "1.0.3"
 }
 
-message DeviceHelloResponse {
+message DeviceInitResponse {
   string message = 1;     // friendly text
   int64 server_unix_ms = 2; // server time in ms since epoch
 }

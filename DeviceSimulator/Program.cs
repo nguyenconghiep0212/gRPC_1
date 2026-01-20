@@ -13,15 +13,51 @@ using var channel = GrpcChannel.ForAddress(serverAddress);
 var client = new DeviceGateway.DeviceGatewayClient(channel);
 
 // Prepare a simple hello
-var deviceId = Environment.GetEnvironmentVariable("DEVICE_ID") ?? "peg-plant1-line3-robot7";
+var deviceId = Environment.GetEnvironmentVariable("DEVICE_ID") ?? "Station 1";
 var fwVersion = "1.0.0";
 
-var reply = await client.SayHelloAsync(new DeviceHelloRequest
-{
-	DeviceId = deviceId,
-	FwVersion = fwVersion
-});
+// Run sequence
+await InitAsync();
+await Telemetry();
+//
 
-Console.WriteLine($"[DeviceSimulator] Server says: {reply.Message} (server time: {reply.ServerUnixMs})");
+async Task InitAsync()
+{
+	var reply = await client.InitAsync(new DeviceInitRequest
+	{
+		DeviceId = deviceId,
+		FwVersion = fwVersion
+	});
+	Console.WriteLine($"[DeviceSimulator] Server says: {reply.Message} (server time: {reply.ServerUnixMs})");
+}
+
+
+// 2) SendTelemetry(client streaming)
+async Task Telemetry()
+{
+
+	using var call = client.SendTelemetry();
+
+	var now = DateTime.UtcNow.Millisecond;
+
+	// A few sample points
+	var points = new[]
+	{
+	new TelemetryPoint { DeviceId = deviceId, Metric = "temperature", Value = 36.7, UnixMs = now },
+	new TelemetryPoint { DeviceId = deviceId, Metric = "temperature", Value = 36.9, UnixMs = now + 1000 },
+	new TelemetryPoint { DeviceId = deviceId, Metric = "rpm",         Value = 1500,  UnixMs = now + 2000 },
+	new TelemetryPoint { DeviceId = deviceId, Metric = "",            Value = double.NaN, UnixMs = 0 } // invalid on purpose
+};
+	foreach (var p in points)
+	{
+		await call.RequestStream.WriteAsync(p);
+	}
+	await call.RequestStream.CompleteAsync();
+	var ack = await call.ResponseAsync;
+
+	Console.WriteLine($"[DeviceSimulator] Server says: Accepted: {ack.Accepted}, Rejected: {ack.Rejected}, Note: {ack.Note} ");
+}
+
+
 Console.WriteLine("Press any key to exit...");
 Console.ReadKey();
