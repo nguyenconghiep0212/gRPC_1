@@ -1,16 +1,17 @@
-﻿
-using Grpc.Core;
-using IotGrpcLearning;
+﻿using Grpc.Core;
+using IotGrpcLearning.Proto;
 
-namespace IotGrpcLearning;
+namespace IotGrpcLearning.Services;
 
 public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 {
 	private readonly ILogger<DeviceGatewayService> _logger;
+	private readonly ICommandBus _commandBus;
 
-	public DeviceGatewayService(ILogger<DeviceGatewayService> logger)
+	public DeviceGatewayService(ILogger<DeviceGatewayService> logger, ICommandBus commandBus)
 	{
 		_logger = logger;
+		_commandBus = commandBus;
 	}
 
 	public override Task<DeviceInitResponse> Init(DeviceInitRequest request, ServerCallContext context)
@@ -66,6 +67,48 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 
 		var note = rejected == 0 ? "ok" : "some points were invalid";
 		return new TelemetryAck { Accepted = accepted, Rejected = rejected, Note = note };
+	}
+
+	public override async Task SubscribeCommands(
+		   DeviceId request,
+		   IServerStreamWriter<Command> responseStream,
+		   ServerCallContext context)
+	{
+		var deviceId = (request?.Id ?? string.Empty).Trim();
+		if (string.IsNullOrWhiteSpace(deviceId))
+			throw new RpcException(new Status(StatusCode.InvalidArgument, "device id is required"));
+
+		_logger.LogInformation("Device subscribed for commands: {DeviceId}", deviceId);
+
+		// Subscribe to the device-specific queue
+		var reader = _commandBus.Subscribe(deviceId);
+		var ct = context.CancellationToken;
+
+		// OPTIONAL: Push a welcome/ping command on subscribe
+		await _commandBus.EnqueueAsync(deviceId, new Command
+		{
+			CommandId = Guid.NewGuid().ToString("N"),
+			Name = "Ping",
+			Args = { { "reason", "initial-subscribe" } }
+		}, ct);
+
+		try
+		{
+			// Drain commands as they arrive and write them to the stream
+			while (await reader.WaitToReadAsync(ct))
+			{
+				while (reader.TryRead(out var cmd))
+				{
+					await responseStream.WriteAsync(cmd);
+					_logger.LogInformation("Pushed command to {DeviceId}: {Name} ({CommandId})",
+						deviceId, cmd.Name, cmd.CommandId);
+				}
+			}
+		}
+		catch (OperationCanceledException)
+		{
+			_logger.LogInformation("Command stream closed for {DeviceId}", deviceId);
+		}
 	}
 
 }

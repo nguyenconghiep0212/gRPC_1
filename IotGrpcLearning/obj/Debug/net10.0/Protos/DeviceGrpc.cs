@@ -7,7 +7,7 @@
 
 using grpc = global::Grpc.Core;
 
-namespace IotGrpcLearning {
+namespace IotGrpcLearning.Proto {
   public static partial class DeviceGateway
   {
     static readonly string __ServiceName = "iot.device.DeviceGateway";
@@ -46,16 +46,20 @@ namespace IotGrpcLearning {
     }
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Marshaller<global::IotGrpcLearning.DeviceInitRequest> __Marshaller_iot_device_DeviceInitRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.DeviceInitRequest.Parser));
+    static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.DeviceInitRequest> __Marshaller_iot_device_DeviceInitRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.DeviceInitRequest.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Marshaller<global::IotGrpcLearning.DeviceInitResponse> __Marshaller_iot_device_DeviceInitResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.DeviceInitResponse.Parser));
+    static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.DeviceInitResponse> __Marshaller_iot_device_DeviceInitResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.DeviceInitResponse.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Marshaller<global::IotGrpcLearning.TelemetryPoint> __Marshaller_iot_device_TelemetryPoint = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.TelemetryPoint.Parser));
+    static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.TelemetryPoint> __Marshaller_iot_device_TelemetryPoint = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.TelemetryPoint.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Marshaller<global::IotGrpcLearning.TelemetryAck> __Marshaller_iot_device_TelemetryAck = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.TelemetryAck.Parser));
+    static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.TelemetryAck> __Marshaller_iot_device_TelemetryAck = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.TelemetryAck.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.DeviceId> __Marshaller_iot_device_DeviceId = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.DeviceId.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.Command> __Marshaller_iot_device_Command = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.Command.Parser));
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Method<global::IotGrpcLearning.DeviceInitRequest, global::IotGrpcLearning.DeviceInitResponse> __Method_Init = new grpc::Method<global::IotGrpcLearning.DeviceInitRequest, global::IotGrpcLearning.DeviceInitResponse>(
+    static readonly grpc::Method<global::IotGrpcLearning.Proto.DeviceInitRequest, global::IotGrpcLearning.Proto.DeviceInitResponse> __Method_Init = new grpc::Method<global::IotGrpcLearning.Proto.DeviceInitRequest, global::IotGrpcLearning.Proto.DeviceInitResponse>(
         grpc::MethodType.Unary,
         __ServiceName,
         "Init",
@@ -63,17 +67,25 @@ namespace IotGrpcLearning {
         __Marshaller_iot_device_DeviceInitResponse);
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Method<global::IotGrpcLearning.TelemetryPoint, global::IotGrpcLearning.TelemetryAck> __Method_SendTelemetry = new grpc::Method<global::IotGrpcLearning.TelemetryPoint, global::IotGrpcLearning.TelemetryAck>(
+    static readonly grpc::Method<global::IotGrpcLearning.Proto.TelemetryPoint, global::IotGrpcLearning.Proto.TelemetryAck> __Method_SendTelemetry = new grpc::Method<global::IotGrpcLearning.Proto.TelemetryPoint, global::IotGrpcLearning.Proto.TelemetryAck>(
         grpc::MethodType.ClientStreaming,
         __ServiceName,
         "SendTelemetry",
         __Marshaller_iot_device_TelemetryPoint,
         __Marshaller_iot_device_TelemetryAck);
 
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Method<global::IotGrpcLearning.Proto.DeviceId, global::IotGrpcLearning.Proto.Command> __Method_SubscribeCommands = new grpc::Method<global::IotGrpcLearning.Proto.DeviceId, global::IotGrpcLearning.Proto.Command>(
+        grpc::MethodType.ServerStreaming,
+        __ServiceName,
+        "SubscribeCommands",
+        __Marshaller_iot_device_DeviceId,
+        __Marshaller_iot_device_Command);
+
     /// <summary>Service descriptor</summary>
     public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
     {
-      get { return global::IotGrpcLearning.DeviceReflection.Descriptor.Services[0]; }
+      get { return global::IotGrpcLearning.Proto.DeviceReflection.Descriptor.Services[0]; }
     }
 
     /// <summary>Base class for server-side implementations of DeviceGateway</summary>
@@ -87,19 +99,32 @@ namespace IotGrpcLearning {
       /// <param name="context">The context of the server-side call handler being invoked.</param>
       /// <returns>The response to send back to the client (wrapped by a task).</returns>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual global::System.Threading.Tasks.Task<global::IotGrpcLearning.DeviceInitResponse> Init(global::IotGrpcLearning.DeviceInitRequest request, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task<global::IotGrpcLearning.Proto.DeviceInitResponse> Init(global::IotGrpcLearning.Proto.DeviceInitRequest request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
 
       /// <summary>
-      /// NEW: client-streaming telemetry → single ack
+      /// Client-streaming telemetry → single ack
       /// </summary>
       /// <param name="requestStream">Used for reading requests from the client.</param>
       /// <param name="context">The context of the server-side call handler being invoked.</param>
       /// <returns>The response to send back to the client (wrapped by a task).</returns>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual global::System.Threading.Tasks.Task<global::IotGrpcLearning.TelemetryAck> SendTelemetry(grpc::IAsyncStreamReader<global::IotGrpcLearning.TelemetryPoint> requestStream, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task<global::IotGrpcLearning.Proto.TelemetryAck> SendTelemetry(grpc::IAsyncStreamReader<global::IotGrpcLearning.Proto.TelemetryPoint> requestStream, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      /// <summary>
+      /// Server-streaming (device subscribes; server pushes commands)
+      /// </summary>
+      /// <param name="request">The request received from the client.</param>
+      /// <param name="responseStream">Used for sending responses back to the client.</param>
+      /// <param name="context">The context of the server-side call handler being invoked.</param>
+      /// <returns>A task indicating completion of the handler.</returns>
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::System.Threading.Tasks.Task SubscribeCommands(global::IotGrpcLearning.Proto.DeviceId request, grpc::IServerStreamWriter<global::IotGrpcLearning.Proto.Command> responseStream, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -113,7 +138,8 @@ namespace IotGrpcLearning {
     {
       return grpc::ServerServiceDefinition.CreateBuilder()
           .AddMethod(__Method_Init, serviceImpl.Init)
-          .AddMethod(__Method_SendTelemetry, serviceImpl.SendTelemetry).Build();
+          .AddMethod(__Method_SendTelemetry, serviceImpl.SendTelemetry)
+          .AddMethod(__Method_SubscribeCommands, serviceImpl.SubscribeCommands).Build();
     }
 
     /// <summary>Register service method with a service binder with or without implementation. Useful when customizing the service binding logic.
@@ -123,8 +149,9 @@ namespace IotGrpcLearning {
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     public static void BindService(grpc::ServiceBinderBase serviceBinder, DeviceGatewayBase serviceImpl)
     {
-      serviceBinder.AddMethod(__Method_Init, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::IotGrpcLearning.DeviceInitRequest, global::IotGrpcLearning.DeviceInitResponse>(serviceImpl.Init));
-      serviceBinder.AddMethod(__Method_SendTelemetry, serviceImpl == null ? null : new grpc::ClientStreamingServerMethod<global::IotGrpcLearning.TelemetryPoint, global::IotGrpcLearning.TelemetryAck>(serviceImpl.SendTelemetry));
+      serviceBinder.AddMethod(__Method_Init, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::IotGrpcLearning.Proto.DeviceInitRequest, global::IotGrpcLearning.Proto.DeviceInitResponse>(serviceImpl.Init));
+      serviceBinder.AddMethod(__Method_SendTelemetry, serviceImpl == null ? null : new grpc::ClientStreamingServerMethod<global::IotGrpcLearning.Proto.TelemetryPoint, global::IotGrpcLearning.Proto.TelemetryAck>(serviceImpl.SendTelemetry));
+      serviceBinder.AddMethod(__Method_SubscribeCommands, serviceImpl == null ? null : new grpc::ServerStreamingServerMethod<global::IotGrpcLearning.Proto.DeviceId, global::IotGrpcLearning.Proto.Command>(serviceImpl.SubscribeCommands));
     }
 
   }

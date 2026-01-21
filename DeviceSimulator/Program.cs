@@ -1,6 +1,7 @@
 ﻿
+using Grpc.Core;
 using Grpc.Net.Client;
-using IotGrpcLearning;
+using IotGrpcLearning.Proto;
 
 // IMPORTANT: In dev, the gRPC server template uses HTTPS with a dev certificate.
 // We'll assume it runs at https://localhost:7096 (check your launchSettings.json).
@@ -13,12 +14,13 @@ using var channel = GrpcChannel.ForAddress(serverAddress);
 var client = new DeviceGateway.DeviceGatewayClient(channel);
 
 // Prepare a simple hello
-var deviceId = Environment.GetEnvironmentVariable("DEVICE_ID") ?? "Station 1";
+var deviceId = Environment.GetEnvironmentVariable("DEVICE_ID") ?? "station-1";
 var fwVersion = "1.0.0";
 
 // Run sequence
 await InitAsync();
 await Telemetry();
+await StartSubscribeCommands();
 //
 
 async Task InitAsync()
@@ -57,6 +59,44 @@ async Task Telemetry()
 
 	Console.WriteLine($"[DeviceSimulator] Server says: Accepted: {ack.Accepted}, Rejected: {ack.Rejected}, Note: {ack.Note} ");
 }
+
+
+// 3) Start server-streaming subscription
+async Task StartSubscribeCommands()
+{
+	using var cts = new CancellationTokenSource();
+	Console.CancelKeyPress += (s, e) => { e.Cancel = true; cts.Cancel(); };
+
+	Console.WriteLine("[Commands] Subscribing to commands... (press ENTER or Ctrl+C to quit)");
+	var call = client.SubscribeCommands(new DeviceId { Id = deviceId }, cancellationToken: cts.Token);
+
+	// Read on the main thread to keep scope alive (simplest and safest)
+	try
+	{
+		await foreach (var cmd in call.ResponseStream.ReadAllAsync(cts.Token))
+		{
+			var args = cmd.Args.Count == 0 ? "{}" : "{" + string.Join(", ", cmd.Args.Select(kv => $"{kv.Key}={kv.Value}")) + "}";
+			Console.WriteLine($"[Commands] Received: {cmd.Name} (id={cmd.CommandId}) args={args}");
+		}
+	}
+	catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
+	{
+		Console.WriteLine("[Commands] Stream cancelled (RpcException.Cancelled).");
+	}
+	catch (OperationCanceledException)
+	{
+		Console.WriteLine("[Commands] Stream cancelled (OperationCanceledException).");
+	}
+	finally
+	{
+		// Ensure the call is disposed AFTER the reader stops
+		call.Dispose();
+	}
+
+}
+
+//static string FormatArgs(Google.Protobuf.Collections.MapField<string, string> args)
+//	=> args.Count == 0 ? "{}" : "{" + string.Join(", ", args.Select(kv => $"{kv.Key}={kv.Value}")) + "}";
 
 
 Console.WriteLine("Press any key to exit...");

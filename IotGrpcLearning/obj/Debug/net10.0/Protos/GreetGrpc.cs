@@ -7,7 +7,7 @@
 
 using grpc = global::Grpc.Core;
 
-namespace IotGrpcLearning {
+namespace IotGrpcLearning.Proto {
   /// <summary>
   /// The greeting service definition.
   /// </summary>
@@ -49,12 +49,12 @@ namespace IotGrpcLearning {
     }
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Marshaller<global::IotGrpcLearning.HelloRequest> __Marshaller_greet_HelloRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.HelloRequest.Parser));
+    static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.HelloRequest> __Marshaller_greet_HelloRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.HelloRequest.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Marshaller<global::IotGrpcLearning.HelloReply> __Marshaller_greet_HelloReply = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.HelloReply.Parser));
+    static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.HelloReply> __Marshaller_greet_HelloReply = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.HelloReply.Parser));
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Method<global::IotGrpcLearning.HelloRequest, global::IotGrpcLearning.HelloReply> __Method_SayHello = new grpc::Method<global::IotGrpcLearning.HelloRequest, global::IotGrpcLearning.HelloReply>(
+    static readonly grpc::Method<global::IotGrpcLearning.Proto.HelloRequest, global::IotGrpcLearning.Proto.HelloReply> __Method_SayHello = new grpc::Method<global::IotGrpcLearning.Proto.HelloRequest, global::IotGrpcLearning.Proto.HelloReply>(
         grpc::MethodType.Unary,
         __ServiceName,
         "SayHello",
@@ -64,7 +64,7 @@ namespace IotGrpcLearning {
     /// <summary>Service descriptor</summary>
     public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
     {
-      get { return global::IotGrpcLearning.GreetReflection.Descriptor.Services[0]; }
+      get { return global::IotGrpcLearning.Proto.GreetReflection.Descriptor.Services[0]; }
     }
 
     /// <summary>Base class for server-side implementations of Greeter</summary>
@@ -78,7 +78,7 @@ namespace IotGrpcLearning {
       /// <param name="context">The context of the server-side call handler being invoked.</param>
       /// <returns>The response to send back to the client (wrapped by a task).</returns>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual global::System.Threading.Tasks.Task<global::IotGrpcLearning.HelloReply> SayHello(global::IotGrpcLearning.HelloRequest request, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task<global::IotGrpcLearning.Proto.HelloReply> SayHello(global::IotGrpcLearning.Proto.HelloRequest request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -101,7 +101,7 @@ namespace IotGrpcLearning {
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     public static void BindService(grpc::ServiceBinderBase serviceBinder, GreeterBase serviceImpl)
     {
-      serviceBinder.AddMethod(__Method_SayHello, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::IotGrpcLearning.HelloRequest, global::IotGrpcLearning.HelloReply>(serviceImpl.SayHello));
+      serviceBinder.AddMethod(__Method_SayHello, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::IotGrpcLearning.Proto.HelloRequest, global::IotGrpcLearning.Proto.HelloReply>(serviceImpl.SayHello));
     }
 
   }

@@ -20,6 +20,7 @@ C:\Users\v-connguyen\source\repos\IotGrpcLearning\IotGrpcLearning\obj\Debug\net1
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\IotGrpcLearning\obj\Debug\net10.0\IotGrpcLearning.AssemblyInfo.cs
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\IotGrpcLearning\obj\Debug\net10.0\IotGrpcLearning.csproj.CoreCompileInputs.cache
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\IotGrpcLearning\obj\Debug\net10.0\IotGrpcLearning.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\v-connguyen\source\repos\IotGrpcLearning\IotGrpcLearning\obj\Debug\net10.0\IotGrpcLearning.sourcelink.json
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\IotGrpcLearning\obj\Debug\net10.0\rjimswa.dswa.cache.json
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\IotGrpcLearning\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\IotGrpcLearning\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
@@ -36,4 +37,3 @@ C:\Users\v-connguyen\source\repos\IotGrpcLearning\IotGrpcLearning\obj\Debug\net1
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\IotGrpcLearning\obj\Debug\net10.0\IotGrpcLearning.pdb
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\IotGrpcLearning\obj\Debug\net10.0\IotGrpcLearning.genruntimeconfig.cache
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\IotGrpcLearning\obj\Debug\net10.0\ref\IotGrpcLearning.dll
-C:\Users\v-connguyen\source\repos\IotGrpcLearning\IotGrpcLearning\obj\Debug\net10.0\IotGrpcLearning.sourcelink.json

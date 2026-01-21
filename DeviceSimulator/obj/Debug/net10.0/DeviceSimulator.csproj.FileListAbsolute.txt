@@ -14,10 +14,10 @@ C:\Users\v-connguyen\source\repos\IotGrpcLearning\DeviceSimulator\obj\Debug\net1
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\DeviceSimulator\obj\Debug\net10.0\DeviceSimulator.AssemblyInfoInputs.cache
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\DeviceSimulator\obj\Debug\net10.0\DeviceSimulator.AssemblyInfo.cs
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\DeviceSimulator\obj\Debug\net10.0\DeviceSimulator.csproj.CoreCompileInputs.cache
+C:\Users\v-connguyen\source\repos\IotGrpcLearning\DeviceSimulator\obj\Debug\net10.0\DeviceSimulator.sourcelink.json
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\DeviceSimulator\obj\Debug\net10.0\DeviceSi.34167AE2.Up2Date
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\DeviceSimulator\obj\Debug\net10.0\DeviceSimulator.dll
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\DeviceSimulator\obj\Debug\net10.0\refint\DeviceSimulator.dll
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\DeviceSimulator\obj\Debug\net10.0\DeviceSimulator.pdb
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\DeviceSimulator\obj\Debug\net10.0\DeviceSimulator.genruntimeconfig.cache
 C:\Users\v-connguyen\source\repos\IotGrpcLearning\DeviceSimulator\obj\Debug\net10.0\ref\DeviceSimulator.dll
-C:\Users\v-connguyen\source\repos\IotGrpcLearning\DeviceSimulator\obj\Debug\net10.0\DeviceSimulator.sourcelink.json

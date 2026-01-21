@@ -1,5 +1,5 @@
 ﻿syntax = "proto3";
-option csharp_namespace = "IotGrpcLearning";
+option csharp_namespace = "IotGrpcLearning.Proto";
 
 package iot.device;
 
@@ -7,13 +7,16 @@ service DeviceGateway {
   // Unary hello (already implemented)
   rpc Init (DeviceInitRequest) returns (DeviceInitResponse);
 
-  // NEW: client-streaming telemetry → single ack
+  // Client-streaming telemetry → single ack
   rpc SendTelemetry (stream TelemetryPoint) returns (TelemetryAck);
+
+  // Server-streaming (device subscribes; server pushes commands)
+  rpc SubscribeCommands (DeviceId) returns (stream Command);
 }
 
 // A device greets the gateway once it connects
 message DeviceInitRequest {
-  string device_id = 1;   // e.g., "peg-plant1-line3-robot7"
+  string device_id = 1;   // e.g., "station 1"
   string fw_version = 2;  // firmware version, e.g., "1.0.3"
 }
 
@@ -22,6 +25,8 @@ message DeviceInitResponse {
   int64 server_unix_ms = 2; // server time in ms since epoch
 }
 
+
+// Telemetry Data
 message TelemetryPoint {
   string device_id = 1;         // which device sent this
   string metric = 2;            // e.g., "temperature", "rpm"
@@ -36,6 +41,16 @@ message TelemetryAck {
   string note = 3;              // optional info (e.g., "ok", "some invalid")
 }
 
+// Command message and server-streaming RPC
+message DeviceId {
+  string id = 1;
+}
+
+message Command {
+  string command_id = 1;            // server-generated GUID
+  string name = 2;                  // e.g., "Ping", "EnterSafeMode"
+  map<string, string> args = 3;     // optional, e.g., {"level":"crit"}
+}
 
 
 
