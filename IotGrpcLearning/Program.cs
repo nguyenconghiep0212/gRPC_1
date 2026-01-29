@@ -1,5 +1,6 @@
 using IotGrpcLearning.Proto;
 using IotGrpcLearning.Services;
+using Microsoft.Extensions.Hosting;
 
 namespace IotGrpcLearning
 {
@@ -31,13 +32,14 @@ namespace IotGrpcLearning
 				// collect query string as args, e.g., ?key=value
 				foreach (var (k, v) in http.Request.Query)
 				{
-					if (!string.IsNullOrWhiteSpace(k) && v.Count > 0)
+ 					if (!string.IsNullOrWhiteSpace(k) && v.Count > 0)
 						cmd.Args[k] = v[0]!;
 				}
 
 				await bus.EnqueueAsync(deviceId, cmd, http.RequestAborted);
 				return Results.Ok(new { queued = true, deviceId, cmd = new { cmd.CommandId, cmd.Name, Args = cmd.Args } });
 			});
+			//curl - X POST "https://localhost:7096/cmd/peg-plant1-line3-robot7/SetThreshold?metric=temperature&value=38.0"
 			//
 
 

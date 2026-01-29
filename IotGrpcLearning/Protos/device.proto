@@ -27,12 +27,29 @@ message DeviceInitResponse {
 
 
 // Telemetry Data
+
+message Temperature {
+  double celsius = 1;
+}
+
+message Rpm {
+  double value = 1;
+}
+
+message Vibration {
+  double mm_per_s = 1;
+}
+
+
 message TelemetryPoint {
   string device_id = 1;         // which device sent this
-  string metric = 2;            // e.g., "temperature", "rpm"
-  double value = 3;             // numeric value
   int64 unix_ms = 4;            // event time (ms since epoch)
-  map<string, string> tags = 5; // optional labels: zone=A1, unit=C
+  oneof reading {
+    Temperature temperature = 10;
+    Rpm rpm = 11;
+    Vibration vibration = 12;
+  }
+
 }
 
 message TelemetryAck {

@@ -2,6 +2,9 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
+.vs/
+
 /.vs/IotGrpcLearning/CopilotIndices/18.0.981.45449
 /.vs/IotGrpcLearning.slnx/FileContentIndex
-.vs/
+/.vs/
+
