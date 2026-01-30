@@ -50,13 +50,15 @@ namespace IotGrpcLearning.Proto {
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.DeviceInitResponse> __Marshaller_iot_device_DeviceInitResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.DeviceInitResponse.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.TelemetryPoint> __Marshaller_iot_device_TelemetryPoint = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.TelemetryPoint.Parser));
+    static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.TelemetryRequest> __Marshaller_iot_device_TelemetryRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.TelemetryRequest.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.TelemetryAck> __Marshaller_iot_device_TelemetryAck = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.TelemetryAck.Parser));
+    static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.TelemetryResponse> __Marshaller_iot_device_TelemetryResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.TelemetryResponse.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.DeviceId> __Marshaller_iot_device_DeviceId = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.DeviceId.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.Command> __Marshaller_iot_device_Command = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.Command.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.DeviceStatusRequest> __Marshaller_iot_device_DeviceStatusRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.DeviceStatusRequest.Parser));
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Method<global::IotGrpcLearning.Proto.DeviceInitRequest, global::IotGrpcLearning.Proto.DeviceInitResponse> __Method_Init = new grpc::Method<global::IotGrpcLearning.Proto.DeviceInitRequest, global::IotGrpcLearning.Proto.DeviceInitResponse>(
@@ -67,12 +69,12 @@ namespace IotGrpcLearning.Proto {
         __Marshaller_iot_device_DeviceInitResponse);
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Method<global::IotGrpcLearning.Proto.TelemetryPoint, global::IotGrpcLearning.Proto.TelemetryAck> __Method_SendTelemetry = new grpc::Method<global::IotGrpcLearning.Proto.TelemetryPoint, global::IotGrpcLearning.Proto.TelemetryAck>(
+    static readonly grpc::Method<global::IotGrpcLearning.Proto.TelemetryRequest, global::IotGrpcLearning.Proto.TelemetryResponse> __Method_SendTelemetry = new grpc::Method<global::IotGrpcLearning.Proto.TelemetryRequest, global::IotGrpcLearning.Proto.TelemetryResponse>(
         grpc::MethodType.ClientStreaming,
         __ServiceName,
         "SendTelemetry",
-        __Marshaller_iot_device_TelemetryPoint,
-        __Marshaller_iot_device_TelemetryAck);
+        __Marshaller_iot_device_TelemetryRequest,
+        __Marshaller_iot_device_TelemetryResponse);
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Method<global::IotGrpcLearning.Proto.DeviceId, global::IotGrpcLearning.Proto.Command> __Method_SubscribeCommands = new grpc::Method<global::IotGrpcLearning.Proto.DeviceId, global::IotGrpcLearning.Proto.Command>(
@@ -80,6 +82,14 @@ namespace IotGrpcLearning.Proto {
         __ServiceName,
         "SubscribeCommands",
         __Marshaller_iot_device_DeviceId,
+        __Marshaller_iot_device_Command);
+
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Method<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.Command> __Method_Heartbeat = new grpc::Method<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.Command>(
+        grpc::MethodType.DuplexStreaming,
+        __ServiceName,
+        "Heartbeat",
+        __Marshaller_iot_device_DeviceStatusRequest,
         __Marshaller_iot_device_Command);
 
     /// <summary>Service descriptor</summary>
@@ -171,7 +181,7 @@ namespace IotGrpcLearning.Proto {
       /// <param name="cancellationToken">An optional token for canceling the call.</param>
       /// <returns>The call object.</returns>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual grpc::AsyncClientStreamingCall<global::IotGrpcLearning.Proto.TelemetryPoint, global::IotGrpcLearning.Proto.TelemetryAck> SendTelemetry(grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      public virtual grpc::AsyncClientStreamingCall<global::IotGrpcLearning.Proto.TelemetryRequest, global::IotGrpcLearning.Proto.TelemetryResponse> SendTelemetry(grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
         return SendTelemetry(new grpc::CallOptions(headers, deadline, cancellationToken));
       }
@@ -181,7 +191,7 @@ namespace IotGrpcLearning.Proto {
       /// <param name="options">The options for the call.</param>
       /// <returns>The call object.</returns>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual grpc::AsyncClientStreamingCall<global::IotGrpcLearning.Proto.TelemetryPoint, global::IotGrpcLearning.Proto.TelemetryAck> SendTelemetry(grpc::CallOptions options)
+      public virtual grpc::AsyncClientStreamingCall<global::IotGrpcLearning.Proto.TelemetryRequest, global::IotGrpcLearning.Proto.TelemetryResponse> SendTelemetry(grpc::CallOptions options)
       {
         return CallInvoker.AsyncClientStreamingCall(__Method_SendTelemetry, null, options);
       }
@@ -208,6 +218,28 @@ namespace IotGrpcLearning.Proto {
       public virtual grpc::AsyncServerStreamingCall<global::IotGrpcLearning.Proto.Command> SubscribeCommands(global::IotGrpcLearning.Proto.DeviceId request, grpc::CallOptions options)
       {
         return CallInvoker.AsyncServerStreamingCall(__Method_SubscribeCommands, null, options, request);
+      }
+      /// <summary>
+      /// Sidirectional heartbeat
+      /// </summary>
+      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+      /// <param name="cancellationToken">An optional token for canceling the call.</param>
+      /// <returns>The call object.</returns>
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual grpc::AsyncDuplexStreamingCall<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.Command> Heartbeat(grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return Heartbeat(new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      /// <summary>
+      /// Sidirectional heartbeat
+      /// </summary>
+      /// <param name="options">The options for the call.</param>
+      /// <returns>The call object.</returns>
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual grpc::AsyncDuplexStreamingCall<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.Command> Heartbeat(grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncDuplexStreamingCall(__Method_Heartbeat, null, options);
       }
       /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]

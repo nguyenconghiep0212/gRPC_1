@@ -3,6 +3,8 @@ using Grpc.Net.Client;
 using IotGrpcLearning.Proto;
 using System.CommandLine;
 
+
+Console.WriteLine($"COUNT env = '{Environment.GetEnvironmentVariable("COUNT") ?? "<null>"}'");
 // IMPORTANT: In dev, the gRPC server template uses HTTPS with a dev certificate.
 // We'll assume it runs at https://localhost:7096 (check your launchSettings.json).
 Option<string> serverOption = new("--server", ["-s"])
@@ -71,12 +73,14 @@ root.SetAction(async (parseResult) =>
 ParseResult parseResult = root.Parse(args);
 return parseResult.Invoke();
 
+
 // =========== per-device logic ===========
 async Task RunDeviceAsync(DeviceGateway.DeviceGatewayClient client, string deviceId, int periodMs, string fwVersion, CancellationToken ct)
 {
 	// Run sequence
 	await InitAsync(deviceId, fwVersion, client);
 	await Telemetry(deviceId, client);
+	await StartHeartBeat(deviceId, client);
 	await StartSubscribeCommands(deviceId, client);
 	//
 }
@@ -103,10 +107,10 @@ async Task Telemetry(string deviceId, DeviceGateway.DeviceGatewayClient client)
 	// A few sample points
 	var points = new[]
 	{
-	new TelemetryPoint { DeviceId = deviceId, Metric = "temperature", Value = 36.7, UnixMs = now },
-	new TelemetryPoint { DeviceId = deviceId, Metric = "temperature", Value = 36.9, UnixMs = now + 1000 },
-	new TelemetryPoint { DeviceId = deviceId, Metric = "rpm",         Value = 1500,  UnixMs = now + 2000 },
-	new TelemetryPoint { DeviceId = deviceId, Metric = "",            Value = double.NaN, UnixMs = 0 } // invalid on purpose
+	new TelemetryRequest { DeviceId = deviceId, Metric = "temperature", Value = 36.7, UnixMs = now },
+	new TelemetryRequest { DeviceId = deviceId, Metric = "temperature", Value = 36.9, UnixMs = now + 1000 },
+	new TelemetryRequest { DeviceId = deviceId, Metric = "rpm",         Value = 1500,  UnixMs = now + 2000 },
+	//new TelemetryRequest { DeviceId = deviceId, Metric = "",            Value = double.NaN, UnixMs = 0 } // invalid on purpose
 };
 	foreach (var p in points)
 	{
@@ -134,7 +138,7 @@ async Task StartSubscribeCommands(string deviceId, DeviceGateway.DeviceGatewayCl
 		await foreach (var cmd in call.ResponseStream.ReadAllAsync(cts.Token))
 		{
 			var args = cmd.Args.Count == 0 ? "{}" : "{" + string.Join(", ", cmd.Args.Select(kv => $"{kv.Key}={kv.Value}")) + "}";
-			Console.WriteLine($"[Commands] Received: Device={deviceId} cmdName={cmd.Name} (id={cmd.CommandId}) args={args}");
+			Console.WriteLine($"[Commands] Received: Device={deviceId} cmdName={cmd.Name} args={args}");
 		}
 	}
 	catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
@@ -150,4 +154,62 @@ async Task StartSubscribeCommands(string deviceId, DeviceGateway.DeviceGatewayCl
 		// Ensure the call is disposed AFTER the reader stops
 		call.Dispose();
 	}
+}
+
+// 4) Bi-di Heartbeat
+async Task StartHeartBeat(string deviceId, DeviceGateway.DeviceGatewayClient client)
+{
+	Console.WriteLine("Running HeartBeat...");
+
+	using var cts = new CancellationTokenSource();
+	var hb = client.Heartbeat(cancellationToken: cts.Token);
+	// Background reader: commands from server
+	var readTask = Task.Run(async () =>
+	{
+		try
+		{
+			await foreach (var cmd in hb.ResponseStream.ReadAllAsync(cts.Token))
+			{
+				var args = cmd.Args.Count == 0 ? "{}" : "{" + string.Join(", ", cmd.Args.Select(kv => $"{kv.Key}={kv.Value}")) + "}";
+				Console.WriteLine($"[Sim:{deviceId}] HB <- CMD: {cmd.Name} args={args}");
+			}
+		}
+		catch (OperationCanceledException) { }
+		catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled) { }
+		catch (Exception ex) { Console.WriteLine($"[Sim:{deviceId}] HB read error: {ex.Message}"); }
+	}, cts.Token);
+
+	// Writer: periodically send status
+	var rnd = new Random(deviceId.GetHashCode());
+	try
+	{
+		while (!cts.IsCancellationRequested)
+		{
+			var health = PickHealth(rnd); // "OK" most of the time, sometimes "WARN"/"CRIT"
+			var status = new DeviceStatusRequest
+			{
+				DeviceId = deviceId,
+				Health = health,
+				Details = health == "CRIT" ? "Overheat detected" : (health == "WARN" ? "Temp trending high" : "All good"),
+				UnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+			};
+			await hb.RequestStream.WriteAsync(status);
+			await Task.Delay(TimeSpan.FromSeconds(5), cts.Token);
+		}
+	}
+	catch (OperationCanceledException) { }
+
+	// End request stream gracefully, wait for reader, dispose
+	try { await hb.RequestStream.CompleteAsync(); } catch { }
+	await readTask;
+	hb.Dispose();
+
+	static string PickHealth(Random r)
+	{
+		var roll = r.Next(100);
+		if (roll < 80) return "OK";
+		if (roll < 95) return "WARN";
+		return "CRIT";
+	}
+
 }

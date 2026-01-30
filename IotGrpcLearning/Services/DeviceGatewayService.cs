@@ -1,5 +1,6 @@
 ﻿using Grpc.Core;
 using IotGrpcLearning.Proto;
+using System.Threading.Channels;
 
 namespace IotGrpcLearning.Services;
 
@@ -109,6 +110,142 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 		catch (OperationCanceledException)
 		{
 			_logger.LogInformation("Command stream closed for {DeviceId}", deviceId);
+		}
+	}
+
+	public override async Task Heartbeat(
+			IAsyncStreamReader<DeviceStatusRequest> requestStream,
+			IServerStreamWriter<Command> responseStream,
+			ServerCallContext context)
+	{
+		Console.WriteLine("Running HeartBeatAsync...");
+
+		int heartBeatInterval = 3; // seconds
+		var ct = context.CancellationToken;
+
+		// We’ll infer deviceId from the first status
+		string? deviceId = null;
+
+		// Local outbox to serialize all writes to the response stream
+		var outbox = Channel.CreateUnbounded<Command>(new UnboundedChannelOptions
+		{
+			SingleReader = true,
+			SingleWriter = false
+		});
+
+		// Writer task: the ONLY place that writes to responseStream
+		var writerTask = Task.Run(async () =>
+		{
+			try
+			{
+				await foreach (var cmd in outbox.Reader.ReadAllAsync(ct))
+				{
+					await responseStream.WriteAsync(cmd);
+					if (deviceId is not null)
+					{
+						_logger.LogInformation("HB -> {DeviceId}: {Command} ({CmdId})",
+							deviceId, cmd.Name, cmd.CommandId);
+					}
+				}
+			}
+			catch (OperationCanceledException) { /* normal */ }
+		}, ct);
+
+		// Periodic pinger (every 15s)
+		using var pingerCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+		var pingerTask = Task.Run(async () =>
+		{
+			try
+			{
+				while (!pingerCts.Token.IsCancellationRequested)
+				{
+					await Task.Delay(TimeSpan.FromSeconds(heartBeatInterval), pingerCts.Token);
+					if (deviceId is null) continue;
+
+					await outbox.Writer.WriteAsync(new Command
+					{
+						CommandId = Guid.NewGuid().ToString("N"),
+						Name = "Ping",
+						Args = { { "source", "heartbeat-timer" } }
+					}, pingerCts.Token);
+				}
+			}
+			catch (OperationCanceledException) { /* normal */ }
+		}, pingerCts.Token);
+
+		// OPTIONAL: also pull commands from the global bus and forward into the HB stream
+		ChannelReader<Command>? busReader = null;
+		Task busPumpTask = Task.CompletedTask;
+
+		try
+		{
+			await foreach (var status in requestStream.ReadAllAsync(ct))
+			{
+				deviceId ??= (status.DeviceId ?? string.Empty).Trim();
+				if (string.IsNullOrWhiteSpace(deviceId))
+				{
+					throw new RpcException(new Status(StatusCode.InvalidArgument, "device_id is required in Heartbeat"));
+				}
+
+				// lazily attach bus forwarding once deviceId known
+				if (busReader is null)
+				{
+					// Forward /cmd injected commands into this same response stream
+					busReader = _commandBus.Subscribe(deviceId);
+					busPumpTask = Task.Run(async () =>
+					{
+						try
+						{
+							while (await busReader.WaitToReadAsync(ct))
+							{
+								while (busReader.TryRead(out var cmd))
+								{
+									await outbox.Writer.WriteAsync(cmd, ct);
+								}
+							}
+						}
+						catch (OperationCanceledException) { /* normal */ }
+					}, ct);
+				}
+
+				var tsUtc = DateTimeOffset.FromUnixTimeMilliseconds(status.UnixMs).UtcDateTime;
+				_logger.LogInformation("HB <- {DeviceId}: health={Health} details='{Details}' at={Ts:dd/MM/yyyy HH:mm:ss.fff}Z",
+					deviceId, status.Health, status.Details ?? "", tsUtc);
+
+				// Reactive rule: CRIT -> immediate EnterSafeMode
+				if (string.Equals(status.Health, "CRIT", StringComparison.OrdinalIgnoreCase))
+				{
+					await outbox.Writer.WriteAsync(new Command
+					{
+						CommandId = Guid.NewGuid().ToString("N"),
+						Name = "EnterSafeMode",
+						Args = { { "reason", "critical-health" } }
+					}, ct);
+				}
+				// Optional: WARN -> RequestDiagnostics
+				else if (string.Equals(status.Health, "WARN", StringComparison.OrdinalIgnoreCase))
+				{
+					await outbox.Writer.WriteAsync(new Command
+					{
+						CommandId = Guid.NewGuid().ToString("N"),
+						Name = "RequestDiagnostics",
+						Args = { { "reason", "warn-health" } }
+					}, ct);
+				}
+			}
+		}
+		catch (OperationCanceledException)
+		{
+			_logger.LogInformation("Heartbeat stream cancelled for {DeviceId}", deviceId ?? "(unknown)");
+		}
+		finally
+		{
+			// Stop timers & pumps
+			pingerCts.Cancel();
+			outbox.Writer.TryComplete();
+			try { await pingerTask; } catch { }
+			try { await busPumpTask; } catch { }
+			try { await writerTask; } catch { }
 		}
 	}
 }

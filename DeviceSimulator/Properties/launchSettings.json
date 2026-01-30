@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "DevicesSimulator": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "SERVER": "https://localhost:7096",
+        "COUNT": "1",
+        "PREFIX": "station",
+        "PERIOD_MS": "1000",
+        "FWVERSION": "1.0.1"
+      }
+    }
+  }
+}
