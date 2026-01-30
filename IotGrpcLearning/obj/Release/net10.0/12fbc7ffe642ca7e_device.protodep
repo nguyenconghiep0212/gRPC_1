@@ -1,0 +1,2 @@
+obj\Release\net10.0\Protos/Device.cs \
+obj\Release\net10.0\Protos/DeviceGrpc.cs: Protos/device.proto

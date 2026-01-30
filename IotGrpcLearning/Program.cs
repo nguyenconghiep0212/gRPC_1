@@ -39,7 +39,7 @@ namespace IotGrpcLearning
 				await bus.EnqueueAsync(deviceId, cmd, http.RequestAborted);
 				return Results.Ok(new { queued = true, deviceId, cmd = new { cmd.CommandId, cmd.Name, Args = cmd.Args } });
 			});
-			//curl - X POST "https://localhost:7096/cmd/peg-plant1-line3-robot7/SetThreshold?metric=temperature&value=38.0"
+			//curl - X POST "https://localhost:7096/cmd/station-1/SetThreshold?metric=temperature&value=38.0"
 			//
 
 

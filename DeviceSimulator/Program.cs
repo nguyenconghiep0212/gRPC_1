@@ -1,29 +1,87 @@
-﻿
-using Grpc.Core;
+﻿using Grpc.Core;
 using Grpc.Net.Client;
 using IotGrpcLearning.Proto;
+using System.CommandLine;
 
 // IMPORTANT: In dev, the gRPC server template uses HTTPS with a dev certificate.
 // We'll assume it runs at https://localhost:7096 (check your launchSettings.json).
-var serverAddress = "https://localhost:7096";
+Option<string> serverOption = new("--server", ["-s"])
+{
+	Description = "DeviceGateway address",
+	DefaultValueFactory = (parseResult) => Environment.GetEnvironmentVariable("SERVER") ?? "https://localhost:7096"
+};
+Option<int> countOption = new("--count", ["-c"])
+{
+	Description = "Number of devices to simulate",
+	DefaultValueFactory = (parseResult) => int.TryParse(Environment.GetEnvironmentVariable("COUNT"), out var n) ? n : 5
+};
+Option<string> prefixOption = new("--prefix", ["-p"])
+{
+	Description = "Device ID prefix",
+	DefaultValueFactory = (parseResult) => Environment.GetEnvironmentVariable("PREFIX") ?? "station"
+};
+Option<int> periodMsOption = new("--period-ms", ["-pms"])
+{
+	Description = "Telemetry period per device (ms)",
+	DefaultValueFactory = (parseResult) => int.TryParse(Environment.GetEnvironmentVariable("PERIOD_MS"), out var p) ? p : 1000
+};
+Option<string> fwVersionOption = new("--fw-version", ["-fw"])
+{
+	Description = "Firmware used by devices",
+	DefaultValueFactory = (parseResult) => Environment.GetEnvironmentVariable("FWVERSION") ?? "1.0.1"
+};
 
-// Create the gRPC channel
-using var channel = GrpcChannel.ForAddress(serverAddress);
 
-// Create the client from generated code
-var client = new DeviceGateway.DeviceGatewayClient(channel);
+var root = new RootCommand("Multi Device Simulator");
+root.Options.Add(serverOption);
+root.Options.Add(countOption);
+root.Options.Add(prefixOption);
+root.Options.Add(periodMsOption);
+root.Options.Add(fwVersionOption);
 
-// Prepare a simple hello
-var deviceId = Environment.GetEnvironmentVariable("DEVICE_ID") ?? "station-1";
-var fwVersion = "1.0.0";
+root.SetAction(async (parseResult) =>
+{
+	string server = parseResult.GetValue(serverOption) ?? "https://localhost:7096";
+	int count = parseResult.GetValue(countOption);
+	string prefix = parseResult.GetValue(prefixOption) ?? "station";
+	int periodMs = parseResult.GetValue(periodMsOption);
+	string fwversion = parseResult.GetValue(fwVersionOption) ?? "1.0.1";
+	Console.WriteLine($"[MultiSim] Server={server}, Devices={count}, Prefix={prefix}, Period={periodMs}ms, FW-Version={fwversion}");
 
-// Run sequence
-await InitAsync();
-await Telemetry();
-await StartSubscribeCommands();
-//
+	using var channel = GrpcChannel.ForAddress(server);
+	var client = new DeviceGateway.DeviceGatewayClient(channel);
 
-async Task InitAsync()
+	using var cts = new CancellationTokenSource();
+	Console.CancelKeyPress += (s, e) => { e.Cancel = true; cts.Cancel(); };
+	Console.WriteLine("Press ENTER to stop all devices...");
+	_ = Task.Run(() => { Console.ReadLine(); cts.Cancel(); });
+
+	// Start N devices
+	var tasks = Enumerable.Range(1, count)
+		.Select(i => RunDeviceAsync(client, $"{prefix}-{i}", periodMs, fwversion, cts.Token))
+		.ToArray();
+
+	await Task.WhenAll(tasks);
+
+	Console.WriteLine("All devices stopped. Press any key to exit...");
+	Console.ReadKey();
+
+});
+
+ParseResult parseResult = root.Parse(args);
+return parseResult.Invoke();
+
+// =========== per-device logic ===========
+async Task RunDeviceAsync(DeviceGateway.DeviceGatewayClient client, string deviceId, int periodMs, string fwVersion, CancellationToken ct)
+{
+	// Run sequence
+	await InitAsync(deviceId, fwVersion, client);
+	await Telemetry(deviceId, client);
+	await StartSubscribeCommands(deviceId, client);
+	//
+}
+
+async Task InitAsync(string deviceId, string fwVersion, DeviceGateway.DeviceGatewayClient client)
 {
 	var reply = await client.InitAsync(new DeviceInitRequest
 	{
@@ -35,7 +93,7 @@ async Task InitAsync()
 
 
 // 2) SendTelemetry(client streaming)
-async Task Telemetry()
+async Task Telemetry(string deviceId, DeviceGateway.DeviceGatewayClient client)
 {
 
 	using var call = client.SendTelemetry();
@@ -62,7 +120,7 @@ async Task Telemetry()
 
 
 // 3) Start server-streaming subscription
-async Task StartSubscribeCommands()
+async Task StartSubscribeCommands(string deviceId, DeviceGateway.DeviceGatewayClient client)
 {
 	using var cts = new CancellationTokenSource();
 	Console.CancelKeyPress += (s, e) => { e.Cancel = true; cts.Cancel(); };
@@ -76,7 +134,7 @@ async Task StartSubscribeCommands()
 		await foreach (var cmd in call.ResponseStream.ReadAllAsync(cts.Token))
 		{
 			var args = cmd.Args.Count == 0 ? "{}" : "{" + string.Join(", ", cmd.Args.Select(kv => $"{kv.Key}={kv.Value}")) + "}";
-			Console.WriteLine($"[Commands] Received: {cmd.Name} (id={cmd.CommandId}) args={args}");
+			Console.WriteLine($"[Commands] Received: Device={deviceId} cmdName={cmd.Name} (id={cmd.CommandId}) args={args}");
 		}
 	}
 	catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
@@ -92,12 +150,4 @@ async Task StartSubscribeCommands()
 		// Ensure the call is disposed AFTER the reader stops
 		call.Dispose();
 	}
-
 }
-
-//static string FormatArgs(Google.Protobuf.Collections.MapField<string, string> args)
-//	=> args.Count == 0 ? "{}" : "{" + string.Join(", ", args.Select(kv => $"{kv.Key}={kv.Value}")) + "}";
-
-
-Console.WriteLine("Press any key to exit...");
-Console.ReadKey();

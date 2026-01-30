@@ -7,7 +7,7 @@
         "Action": "Start"
       },
       {
-        "Path": "DeviceSimulator\\DeviceSimulator.csproj",
+        "Path": "DeviceSimulator\\DevicesSimulator.csproj",
         "Action": "Start"
       }
     ]

@@ -1,0 +1,2 @@
+obj\Release\net10.0/Device.cs \
+obj\Release\net10.0/DeviceGrpc.cs: ../IoTGrpcLearning/Protos/device.proto

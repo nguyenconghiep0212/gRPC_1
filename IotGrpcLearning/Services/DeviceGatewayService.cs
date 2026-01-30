@@ -37,43 +37,37 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 	}
 
 
-	public override async Task<TelemetryAck> SendTelemetry(
-		  IAsyncStreamReader<TelemetryPoint> requestStream,
-		  ServerCallContext context)
+	public override async Task<TelemetryResponse> SendTelemetry(
+			IAsyncStreamReader<TelemetryRequest> requestStream,
+			ServerCallContext context)
 	{
 		int accepted = 0, rejected = 0;
+		string? deviceIdInferred = null;
 
 		await foreach (var point in requestStream.ReadAllAsync(context.CancellationToken))
 		{
-			// Basic shape checks
-			if (!IsShapeValid(point, out var shapeReason))
+			// simple validation
+			if (string.IsNullOrWhiteSpace(point.DeviceId) ||
+				string.IsNullOrWhiteSpace(point.Metric) ||
+				double.IsNaN(point.Value) || double.IsInfinity(point.Value))
 			{
 				rejected++;
-				_logger.LogWarning("Rejected telemetry (shape): device={DeviceId} | reason={Reason}",
-					point.DeviceId, shapeReason);
+				_logger.LogWarning("Rejected telemetry: device={DeviceId} | metric={Metric} | value={Value}",
+					point.DeviceId, point.Metric, point.Value);
 				continue;
 			}
 
-			// Extract typed metric/value & validate per type
-			if (!TryExtractReading(point, out var metricName, out var numericValue, out var readingReason))
-			{
-				rejected++;
-				_logger.LogWarning("Rejected telemetry (reading): device={DeviceId} | reason={Reason}",
-					point.DeviceId, readingReason);
-				continue;
-			}
+			deviceIdInferred ??= point.DeviceId;
 
-			// Accepted: log and (later) persist
-			var tsUtc = DateTimeOffset.FromUnixTimeMilliseconds(point.UnixMs).UtcDateTime;
-			_logger.LogInformation("Telemetry: device={DeviceId} | {Metric}={Value} | at={Ts:dd/MM/yyyy HH:mm:ss.fff}Z",
-				point.DeviceId, metricName, numericValue, tsUtc);
+			// For now, just log; persistence comes later.
+			_logger.LogInformation("Telemetry: device={DeviceId} | {Metric}={Value} | at={Ts}",
+				point.DeviceId, point.Metric, point.Value, point.UnixMs.ToString("dd/MM/yyyy HH:mm:ss.fff"));
 
-			// TODO: persist to DB here (typed columns or JSON payload)
 			accepted++;
 		}
 
 		var note = rejected == 0 ? "ok" : "some points were invalid";
-		return new TelemetryAck { Accepted = accepted, Rejected = rejected, Note = note };
+		return new TelemetryResponse { Accepted = accepted, Rejected = rejected, Note = note };
 	}
 
 	public override async Task SubscribeCommands(
@@ -117,87 +111,4 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 			_logger.LogInformation("Command stream closed for {DeviceId}", deviceId);
 		}
 	}
-
-
-
-	// ================= helpers =================
-	private static bool IsShapeValid(TelemetryPoint p, out string reason)
-	{
-		if (string.IsNullOrWhiteSpace(p.DeviceId))
-		{
-			reason = "device_id empty";
-			return false;
-		}
-
-		if (p.UnixMs <= 0)
-		{
-			reason = "timestamp invalid";
-			return false;
-		}
-
-		if (p.ReadingCase == TelemetryPoint.ReadingOneofCase.None)
-		{
-			reason = "no reading set";
-			return false;
-		}
-
-		reason = "";
-		return true;
-	}
-
-	/// <summary>
-	/// Extracts the typed reading (metric name + numeric value) and validates the value per type.
-	/// </summary>
-	private static bool TryExtractReading(
-		TelemetryPoint p,
-		out string metricName,
-		out double value,
-		out string reason)
-	{
-		metricName = "";
-		value = 0d;
-		reason = "";
-
-		switch (p.ReadingCase)
-		{
-			case TelemetryPoint.ReadingOneofCase.Temperature:
-				metricName = "temperature";
-				value = p.Temperature?.Celsius ?? double.NaN;
-				if (double.IsNaN(value) || double.IsInfinity(value))
-				{
-					reason = "temperature NaN/Infinity";
-					return false;
-				}
-				// Optional domain sanity (adjust as needed)
-				// if (value < -100 || value > 250) { reason = "temperature out of range"; return false; }
-				return true;
-
-			case TelemetryPoint.ReadingOneofCase.Rpm:
-				metricName = "rpm";
-				value = p.Rpm?.Value ?? double.NaN;
-				if (double.IsNaN(value) || double.IsInfinity(value))
-				{
-					reason = "rpm NaN/Infinity";
-					return false;
-				}
-				// if (value < 0 || value > 100000) { reason = "rpm out of range"; return false; }
-				return true;
-
-			case TelemetryPoint.ReadingOneofCase.Vibration:
-				metricName = "vibration";
-				value = p.Vibration?.MmPerS ?? double.NaN;
-				if (double.IsNaN(value) || double.IsInfinity(value))
-				{
-					reason = "vibration NaN/Infinity";
-					return false;
-				}
-				// if (value < 0) { reason = "vibration negative"; return false; }
-				return true;
-
-			default:
-				reason = "unsupported reading";
-				return false;
-		}
-	}
-
 }

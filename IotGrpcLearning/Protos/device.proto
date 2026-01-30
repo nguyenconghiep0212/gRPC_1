@@ -8,10 +8,13 @@ service DeviceGateway {
   rpc Init (DeviceInitRequest) returns (DeviceInitResponse);
 
   // Client-streaming telemetry → single ack
-  rpc SendTelemetry (stream TelemetryPoint) returns (TelemetryAck);
+  rpc SendTelemetry (stream TelemetryRequest) returns (TelemetryResponse);
 
   // Server-streaming (device subscribes; server pushes commands)
   rpc SubscribeCommands (DeviceId) returns (stream Command);
+
+  // Sidirectional heartbeat
+  rpc Heartbeat (stream DeviceStatusRequest) returns (stream Command);
 }
 
 // A device greets the gateway once it connects
@@ -26,37 +29,31 @@ message DeviceInitResponse {
 }
 
 
-// Telemetry Data
-
-message Temperature {
-  double celsius = 1;
-}
-
-message Rpm {
-  double value = 1;
-}
-
-message Vibration {
-  double mm_per_s = 1;
-}
-
-
-message TelemetryPoint {
+// Telemetry Data 
+message TelemetryRequest {
   string device_id = 1;         // which device sent this
+  string metric = 2;            // e.g., "temperature", "rpm"
+  double value = 3;             // numeric value
   int64 unix_ms = 4;            // event time (ms since epoch)
-  oneof reading {
-    Temperature temperature = 10;
-    Rpm rpm = 11;
-    Vibration vibration = 12;
-  }
-
+  map<string, string> tags = 5; // optional labels: zone=A1, unit=C
 }
 
-message TelemetryAck {
+message TelemetryResponse {
   int32 accepted = 1;
   int32 rejected = 2;
   string note = 3;              // optional info (e.g., "ok", "some invalid")
 }
+
+
+// Heartbeat status from device → server
+message DeviceStatusRequest {
+  string device_id = 1;
+  string health    = 2; // "OK" | "WARN" | "CRIT"
+  string details   = 3; // optional free text
+  int64  unix_ms   = 4; // ms since epoch (time when status was observed)
+  map<string, string> tags = 5; // optional labels
+}
+
 
 // Command message and server-streaming RPC
 message DeviceId {
