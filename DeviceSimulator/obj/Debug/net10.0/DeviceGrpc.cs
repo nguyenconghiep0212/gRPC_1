@@ -59,6 +59,8 @@ namespace IotGrpcLearning.Proto {
     static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.Command> __Marshaller_iot_device_Command = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.Command.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.DeviceStatusRequest> __Marshaller_iot_device_DeviceStatusRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.DeviceStatusRequest.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.DeviceStatusResponse> __Marshaller_iot_device_DeviceStatusResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.DeviceStatusResponse.Parser));
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Method<global::IotGrpcLearning.Proto.DeviceInitRequest, global::IotGrpcLearning.Proto.DeviceInitResponse> __Method_Init = new grpc::Method<global::IotGrpcLearning.Proto.DeviceInitRequest, global::IotGrpcLearning.Proto.DeviceInitResponse>(
@@ -85,12 +87,12 @@ namespace IotGrpcLearning.Proto {
         __Marshaller_iot_device_Command);
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Method<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.Command> __Method_Heartbeat = new grpc::Method<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.Command>(
+    static readonly grpc::Method<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.DeviceStatusResponse> __Method_Heartbeat = new grpc::Method<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.DeviceStatusResponse>(
         grpc::MethodType.DuplexStreaming,
         __ServiceName,
         "Heartbeat",
         __Marshaller_iot_device_DeviceStatusRequest,
-        __Marshaller_iot_device_Command);
+        __Marshaller_iot_device_DeviceStatusResponse);
 
     /// <summary>Service descriptor</summary>
     public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
@@ -227,7 +229,7 @@ namespace IotGrpcLearning.Proto {
       /// <param name="cancellationToken">An optional token for canceling the call.</param>
       /// <returns>The call object.</returns>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual grpc::AsyncDuplexStreamingCall<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.Command> Heartbeat(grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      public virtual grpc::AsyncDuplexStreamingCall<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.DeviceStatusResponse> Heartbeat(grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
         return Heartbeat(new grpc::CallOptions(headers, deadline, cancellationToken));
       }
@@ -237,7 +239,7 @@ namespace IotGrpcLearning.Proto {
       /// <param name="options">The options for the call.</param>
       /// <returns>The call object.</returns>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual grpc::AsyncDuplexStreamingCall<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.Command> Heartbeat(grpc::CallOptions options)
+      public virtual grpc::AsyncDuplexStreamingCall<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.DeviceStatusResponse> Heartbeat(grpc::CallOptions options)
       {
         return CallInvoker.AsyncDuplexStreamingCall(__Method_Heartbeat, null, options);
       }

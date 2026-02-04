@@ -14,7 +14,7 @@ service DeviceGateway {
   rpc SubscribeCommands (DeviceId) returns (stream Command);
 
   // Sidirectional heartbeat
-  rpc Heartbeat (stream DeviceStatusRequest) returns (stream Command);
+  rpc Heartbeat (stream DeviceStatusRequest) returns (stream DeviceStatusResponse);
 }
 
 // A device greets the gateway once it connects
@@ -32,10 +32,9 @@ message DeviceInitResponse {
 // Telemetry Data 
 message TelemetryRequest {
   string device_id = 1;         // which device sent this
-  string metric = 2;            // e.g., "temperature", "rpm"
-  double value = 3;             // numeric value
-  int64 unix_ms = 4;            // event time (ms since epoch)
-  map<string, string> tags = 5; // optional labels: zone=A1, unit=C
+  double tempature = 2;             // numeric value
+  int64 unix_ms = 3;            // event time (ms since epoch)
+  map<string, string> tags = 4; // optional labels: zone=A1, unit=C
 }
 
 message TelemetryResponse {
@@ -47,12 +46,15 @@ message TelemetryResponse {
 
 // Heartbeat status from device → server
 message DeviceStatusRequest {
-  string device_id = 1;
+  string device_id = 1; 
+  double temperature = 2; 
+  int64  unix_ms   = 3; // ms since epoch (time when status was observed)
+}
+message DeviceStatusResponse { 
   string health    = 2; // "OK" | "WARN" | "CRIT"
   string details   = 3; // optional free text
   int64  unix_ms   = 4; // ms since epoch (time when status was observed)
-  map<string, string> tags = 5; // optional labels
-}
+ }
 
 
 // Command message and server-streaming RPC

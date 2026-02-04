@@ -59,6 +59,8 @@ namespace IotGrpcLearning.Proto {
     static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.Command> __Marshaller_iot_device_Command = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.Command.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.DeviceStatusRequest> __Marshaller_iot_device_DeviceStatusRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.DeviceStatusRequest.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::IotGrpcLearning.Proto.DeviceStatusResponse> __Marshaller_iot_device_DeviceStatusResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::IotGrpcLearning.Proto.DeviceStatusResponse.Parser));
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Method<global::IotGrpcLearning.Proto.DeviceInitRequest, global::IotGrpcLearning.Proto.DeviceInitResponse> __Method_Init = new grpc::Method<global::IotGrpcLearning.Proto.DeviceInitRequest, global::IotGrpcLearning.Proto.DeviceInitResponse>(
@@ -85,12 +87,12 @@ namespace IotGrpcLearning.Proto {
         __Marshaller_iot_device_Command);
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Method<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.Command> __Method_Heartbeat = new grpc::Method<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.Command>(
+    static readonly grpc::Method<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.DeviceStatusResponse> __Method_Heartbeat = new grpc::Method<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.DeviceStatusResponse>(
         grpc::MethodType.DuplexStreaming,
         __ServiceName,
         "Heartbeat",
         __Marshaller_iot_device_DeviceStatusRequest,
-        __Marshaller_iot_device_Command);
+        __Marshaller_iot_device_DeviceStatusResponse);
 
     /// <summary>Service descriptor</summary>
     public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
@@ -147,7 +149,7 @@ namespace IotGrpcLearning.Proto {
       /// <param name="context">The context of the server-side call handler being invoked.</param>
       /// <returns>A task indicating completion of the handler.</returns>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual global::System.Threading.Tasks.Task Heartbeat(grpc::IAsyncStreamReader<global::IotGrpcLearning.Proto.DeviceStatusRequest> requestStream, grpc::IServerStreamWriter<global::IotGrpcLearning.Proto.Command> responseStream, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task Heartbeat(grpc::IAsyncStreamReader<global::IotGrpcLearning.Proto.DeviceStatusRequest> requestStream, grpc::IServerStreamWriter<global::IotGrpcLearning.Proto.DeviceStatusResponse> responseStream, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -176,7 +178,7 @@ namespace IotGrpcLearning.Proto {
       serviceBinder.AddMethod(__Method_Init, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::IotGrpcLearning.Proto.DeviceInitRequest, global::IotGrpcLearning.Proto.DeviceInitResponse>(serviceImpl.Init));
       serviceBinder.AddMethod(__Method_SendTelemetry, serviceImpl == null ? null : new grpc::ClientStreamingServerMethod<global::IotGrpcLearning.Proto.TelemetryRequest, global::IotGrpcLearning.Proto.TelemetryResponse>(serviceImpl.SendTelemetry));
       serviceBinder.AddMethod(__Method_SubscribeCommands, serviceImpl == null ? null : new grpc::ServerStreamingServerMethod<global::IotGrpcLearning.Proto.DeviceId, global::IotGrpcLearning.Proto.Command>(serviceImpl.SubscribeCommands));
-      serviceBinder.AddMethod(__Method_Heartbeat, serviceImpl == null ? null : new grpc::DuplexStreamingServerMethod<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.Command>(serviceImpl.Heartbeat));
+      serviceBinder.AddMethod(__Method_Heartbeat, serviceImpl == null ? null : new grpc::DuplexStreamingServerMethod<global::IotGrpcLearning.Proto.DeviceStatusRequest, global::IotGrpcLearning.Proto.DeviceStatusResponse>(serviceImpl.Heartbeat));
     }
 
   }

@@ -1,5 +1,6 @@
 ﻿using Grpc.Core;
 using IotGrpcLearning.Proto;
+using System.Net.NetworkInformation;
 using System.Threading.Channels;
 
 namespace IotGrpcLearning.Services;
@@ -49,20 +50,18 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 		{
 			// simple validation
 			if (string.IsNullOrWhiteSpace(point.DeviceId) ||
-				string.IsNullOrWhiteSpace(point.Metric) ||
-				double.IsNaN(point.Value) || double.IsInfinity(point.Value))
+				double.IsNaN(point.Tempature) ||  double.IsInfinity(point.Tempature))
 			{
 				rejected++;
-				_logger.LogWarning("Rejected telemetry: device={DeviceId} | metric={Metric} | value={Value}",
-					point.DeviceId, point.Metric, point.Value);
+				_logger.LogWarning("Rejected telemetry: device={DeviceId} | tempature={Value}",
+					point.DeviceId, point.Tempature);
 				continue;
-			}
-
+			} 
 			deviceIdInferred ??= point.DeviceId;
 
 			// For now, just log; persistence comes later.
-			_logger.LogInformation("Telemetry: device={DeviceId} | {Metric}={Value} | at={Ts}",
-				point.DeviceId, point.Metric, point.Value, point.UnixMs.ToString("dd/MM/yyyy HH:mm:ss.fff"));
+			_logger.LogInformation("Telemetry: device={DeviceId} | tempature={Value} | at={Ts}",
+				point.DeviceId,  point.Tempature, point.UnixMs.ToString("dd/MM/yyyy HH:mm:ss.fff"));
 
 			accepted++;
 		}
@@ -72,11 +71,11 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 	}
 
 	public override async Task SubscribeCommands(
-		   DeviceId request,
+		   DeviceId DeviceId,
 		   IServerStreamWriter<Command> responseStream,
 		   ServerCallContext context)
 	{
-		var deviceId = (request?.Id ?? string.Empty).Trim();
+		var deviceId = (DeviceId?.Id ?? string.Empty).Trim();
 		if (string.IsNullOrWhiteSpace(deviceId))
 			throw new RpcException(new Status(StatusCode.InvalidArgument, "device id is required"));
 
@@ -87,13 +86,26 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 		var ct = context.CancellationToken;
 
 		// OPTIONAL: Push a welcome/ping command on subscribe
-		await _commandBus.EnqueueAsync(deviceId, new Command
+		Command cmd = new Command
 		{
 			CommandId = Guid.NewGuid().ToString("N"),
 			Name = "Ping",
 			Args = { { "reason", "initial-subscribe" } }
-		}, ct);
+		};
+		await QueueCommand(deviceId, cmd, responseStream, context);
+	}
 
+	public async Task QueueCommand(
+		   string deviceId,
+		   Command newCmd,
+		   IServerStreamWriter<Command> responseStream,
+		   ServerCallContext context
+		)
+	{
+		var reader = _commandBus.Subscribe(deviceId);
+		var ct = context.CancellationToken;
+
+		await _commandBus.EnqueueCommandAsync(deviceId, newCmd, ct);
 		try
 		{
 			// Drain commands as they arrive and write them to the stream
@@ -102,8 +114,8 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 				while (reader.TryRead(out var cmd))
 				{
 					await responseStream.WriteAsync(cmd);
-					_logger.LogInformation("Pushed command to {DeviceId}: {Name} ({CommandId})",
-						deviceId, cmd.Name, cmd.CommandId);
+					_logger.LogInformation("Pushed command to {DeviceId}: {Name}",
+						deviceId, cmd.Name);
 				}
 			}
 		}
@@ -115,67 +127,15 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 
 	public override async Task Heartbeat(
 			IAsyncStreamReader<DeviceStatusRequest> requestStream,
-			IServerStreamWriter<Command> responseStream,
+			IServerStreamWriter<DeviceStatusResponse> responseStream,
 			ServerCallContext context)
 	{
 		Console.WriteLine("Running HeartBeatAsync...");
 
-		int heartBeatInterval = 3; // seconds
 		var ct = context.CancellationToken;
 
 		// We’ll infer deviceId from the first status
-		string? deviceId = null;
-
-		// Local outbox to serialize all writes to the response stream
-		var outbox = Channel.CreateUnbounded<Command>(new UnboundedChannelOptions
-		{
-			SingleReader = true,
-			SingleWriter = false
-		});
-
-		// Writer task: the ONLY place that writes to responseStream
-		var writerTask = Task.Run(async () =>
-		{
-			try
-			{
-				await foreach (var cmd in outbox.Reader.ReadAllAsync(ct))
-				{
-					await responseStream.WriteAsync(cmd);
-					if (deviceId is not null)
-					{
-						_logger.LogInformation("HB -> {DeviceId}: {Command} ({CmdId})",
-							deviceId, cmd.Name, cmd.CommandId);
-					}
-				}
-			}
-			catch (OperationCanceledException) { /* normal */ }
-		}, ct);
-
-		// Periodic pinger (every 15s)
-		using var pingerCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-		var pingerTask = Task.Run(async () =>
-		{
-			try
-			{
-				while (!pingerCts.Token.IsCancellationRequested)
-				{
-					await Task.Delay(TimeSpan.FromSeconds(heartBeatInterval), pingerCts.Token);
-					if (deviceId is null) continue;
-
-					await outbox.Writer.WriteAsync(new Command
-					{
-						CommandId = Guid.NewGuid().ToString("N"),
-						Name = "Ping",
-						Args = { { "source", "heartbeat-timer" } }
-					}, pingerCts.Token);
-				}
-			}
-			catch (OperationCanceledException) { /* normal */ }
-		}, pingerCts.Token);
-
-		// OPTIONAL: also pull commands from the global bus and forward into the HB stream
-		ChannelReader<Command>? busReader = null;
-		Task busPumpTask = Task.CompletedTask;
+		string? deviceId = null; 
 
 		try
 		{
@@ -185,67 +145,46 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 				if (string.IsNullOrWhiteSpace(deviceId))
 				{
 					throw new RpcException(new Status(StatusCode.InvalidArgument, "device_id is required in Heartbeat"));
-				}
+				} 
 
-				// lazily attach bus forwarding once deviceId known
-				if (busReader is null)
-				{
-					// Forward /cmd injected commands into this same response stream
-					busReader = _commandBus.Subscribe(deviceId);
-					busPumpTask = Task.Run(async () =>
-					{
-						try
-						{
-							while (await busReader.WaitToReadAsync(ct))
-							{
-								while (busReader.TryRead(out var cmd))
-								{
-									await outbox.Writer.WriteAsync(cmd, ct);
-								}
-							}
-						}
-						catch (OperationCanceledException) { /* normal */ }
-					}, ct);
-				}
-
-				var tsUtc = DateTimeOffset.FromUnixTimeMilliseconds(status.UnixMs).UtcDateTime;
-				_logger.LogInformation("HB <- {DeviceId}: health={Health} details='{Details}' at={Ts:dd/MM/yyyy HH:mm:ss.fff}Z",
-					deviceId, status.Health, status.Details ?? "", tsUtc);
+				var tsUtc = new DateTime();
+				_logger.LogInformation("HB <- {DeviceId}: Tempature={Temperature} - Health={Health} at={Ts}",
+					deviceId, status.Temperature, HealthAnalyze(status.Temperature), tsUtc);
 
 				// Reactive rule: CRIT -> immediate EnterSafeMode
-				if (string.Equals(status.Health, "CRIT", StringComparison.OrdinalIgnoreCase))
+				if (string.Equals(HealthAnalyze(status.Temperature), "CRIT", StringComparison.OrdinalIgnoreCase))
 				{
-					await outbox.Writer.WriteAsync(new Command
+					DeviceStatusResponse res = new DeviceStatusResponse
 					{
-						CommandId = Guid.NewGuid().ToString("N"),
-						Name = "EnterSafeMode",
-						Args = { { "reason", "critical-health" } }
-					}, ct);
+						Health = "CRIT",
+						Details = "enter-safe-mode",
+						UnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+					};
+					await responseStream.WriteAsync(res); 
 				}
 				// Optional: WARN -> RequestDiagnostics
-				else if (string.Equals(status.Health, "WARN", StringComparison.OrdinalIgnoreCase))
+				else if (string.Equals(HealthAnalyze(status.Temperature), "WARN", StringComparison.OrdinalIgnoreCase))
 				{
-					await outbox.Writer.WriteAsync(new Command
+					DeviceStatusResponse res = new DeviceStatusResponse
 					{
-						CommandId = Guid.NewGuid().ToString("N"),
-						Name = "RequestDiagnostics",
-						Args = { { "reason", "warn-health" } }
-					}, ct);
+						Health = "WARNING",
+						Details = "request-diagnostic",
+						UnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+					};
+					await responseStream.WriteAsync(res);
 				}
 			}
 		}
 		catch (OperationCanceledException)
 		{
 			_logger.LogInformation("Heartbeat stream cancelled for {DeviceId}", deviceId ?? "(unknown)");
-		}
-		finally
+		} 
+
+		static string HealthAnalyze(double tempature)
 		{
-			// Stop timers & pumps
-			pingerCts.Cancel();
-			outbox.Writer.TryComplete();
-			try { await pingerTask; } catch { }
-			try { await busPumpTask; } catch { }
-			try { await writerTask; } catch { }
+			if (tempature < 80) return "OK";
+			if (tempature < 95) return "WARN";
+			return "CRIT";
 		}
 	}
 }

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IotGrpcLearning")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1f230090178474a127546731ac1c9135c4cebf3d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+65635dcd21edb51f3c23c1936222ff0dc2f9a254")]
 [assembly: System.Reflection.AssemblyProductAttribute("IotGrpcLearning")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IotGrpcLearning")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

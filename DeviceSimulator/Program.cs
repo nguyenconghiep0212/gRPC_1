@@ -1,6 +1,7 @@
 ﻿using Grpc.Core;
 using Grpc.Net.Client;
 using IotGrpcLearning.Proto;
+using Microsoft.Extensions.Logging;
 using System.CommandLine;
 
 
@@ -77,10 +78,11 @@ return parseResult.Invoke();
 // =========== per-device logic ===========
 async Task RunDeviceAsync(DeviceGateway.DeviceGatewayClient client, string deviceId, int periodMs, string fwVersion, CancellationToken ct)
 {
+	// Arrange
+
 	// Run sequence
 	await InitAsync(deviceId, fwVersion, client);
 	await Telemetry(deviceId, client);
-	await StartHeartBeat(deviceId, client);
 	await StartSubscribeCommands(deviceId, client);
 	//
 }
@@ -107,10 +109,10 @@ async Task Telemetry(string deviceId, DeviceGateway.DeviceGatewayClient client)
 	// A few sample points
 	var points = new[]
 	{
-	new TelemetryRequest { DeviceId = deviceId, Metric = "temperature", Value = 36.7, UnixMs = now },
-	new TelemetryRequest { DeviceId = deviceId, Metric = "temperature", Value = 36.9, UnixMs = now + 1000 },
-	new TelemetryRequest { DeviceId = deviceId, Metric = "rpm",         Value = 1500,  UnixMs = now + 2000 },
-	//new TelemetryRequest { DeviceId = deviceId, Metric = "",            Value = double.NaN, UnixMs = 0 } // invalid on purpose
+	new TelemetryRequest { DeviceId = deviceId, Tempature= 36.8, UnixMs = now },
+	new TelemetryRequest { DeviceId = deviceId, Tempature= 52, UnixMs = now + 1000 },
+	new TelemetryRequest { DeviceId = deviceId, Tempature= 99.9,  UnixMs = now + 2000 },
+	//new TelemetryRequest { DeviceId = deviceId, Tempature=null ,            Value = double.NaN, UnixMs = 0 } // invalid on purpose
 };
 	foreach (var p in points)
 	{
@@ -126,7 +128,8 @@ async Task Telemetry(string deviceId, DeviceGateway.DeviceGatewayClient client)
 // 3) Start server-streaming subscription
 async Task StartSubscribeCommands(string deviceId, DeviceGateway.DeviceGatewayClient client)
 {
-	using var cts = new CancellationTokenSource();
+	using CancellationTokenSource cts = new CancellationTokenSource();
+
 	Console.CancelKeyPress += (s, e) => { e.Cancel = true; cts.Cancel(); };
 
 	Console.WriteLine("[Commands] Subscribing to commands... (press ENTER or Ctrl+C to quit)");
@@ -137,8 +140,7 @@ async Task StartSubscribeCommands(string deviceId, DeviceGateway.DeviceGatewayCl
 	{
 		await foreach (var cmd in call.ResponseStream.ReadAllAsync(cts.Token))
 		{
-			var args = cmd.Args.Count == 0 ? "{}" : "{" + string.Join(", ", cmd.Args.Select(kv => $"{kv.Key}={kv.Value}")) + "}";
-			Console.WriteLine($"[Commands] Received: Device={deviceId} cmdName={cmd.Name} args={args}");
+			CommandRedirect(deviceId, cmd, client);
 		}
 	}
 	catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
@@ -152,64 +154,85 @@ async Task StartSubscribeCommands(string deviceId, DeviceGateway.DeviceGatewayCl
 	finally
 	{
 		// Ensure the call is disposed AFTER the reader stops
+		Console.WriteLine("Server streaming call dispose!");
 		call.Dispose();
 	}
 }
 
+async void CommandRedirect(string deviceId, IotGrpcLearning.Proto.Command cmd, DeviceGateway.DeviceGatewayClient client)
+{
+	var args = cmd.Args.Count == 0 ? "{}" : "{" + string.Join(", ", cmd.Args.Select(kv => $"{kv.Key}={kv.Value}")) + "}";
+	Console.WriteLine($"[Commands] Received: Device={deviceId} cmdName={cmd.Name} args={args}");
+	using CancellationTokenSource heartbeat_cts = new CancellationTokenSource();
+
+	if (cmd.Name == "StartHeartbeat")
+	{
+		await StartHeartBeat(deviceId, client, heartbeat_cts.Token, true);
+	}
+	if (cmd.Name == "StopHeartbeat")
+	{
+		await StartHeartBeat(deviceId, client, heartbeat_cts.Token, false);
+	}
+}
+
 // 4) Bi-di Heartbeat
-async Task StartHeartBeat(string deviceId, DeviceGateway.DeviceGatewayClient client)
+async Task StartHeartBeat(string deviceId, DeviceGateway.DeviceGatewayClient client, CancellationToken ct, bool toggle)
 {
 	Console.WriteLine("Running HeartBeat...");
 
-	using var cts = new CancellationTokenSource();
-	var hb = client.Heartbeat(cancellationToken: cts.Token);
-	// Background reader: commands from server
-	var readTask = Task.Run(async () =>
+	var hb = client.Heartbeat(cancellationToken: ct);
+	int heartbeatInterval = 5; // seconds
+
+	if (toggle)
 	{
+		// Send temperature status when get request from server
+		var rnd = new Random(deviceId.GetHashCode());
 		try
 		{
-			await foreach (var cmd in hb.ResponseStream.ReadAllAsync(cts.Token))
+			while (!ct.IsCancellationRequested)
 			{
-				var args = cmd.Args.Count == 0 ? "{}" : "{" + string.Join(", ", cmd.Args.Select(kv => $"{kv.Key}={kv.Value}")) + "}";
-				Console.WriteLine($"[Sim:{deviceId}] HB <- CMD: {cmd.Name} args={args}");
+				await Task.Delay(TimeSpan.FromSeconds(heartbeatInterval), ct);
+				double tempature = PickHealth(rnd); // "OK" most of the time, sometimes "WARN"/"CRIT"
+				var status = new DeviceStatusRequest
+				{
+					DeviceId = deviceId,
+					Temperature = tempature,
+					UnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+				};
+				Console.WriteLine($"[Device:{deviceId}] Sending HeartBeat: temp={status.Temperature:F1} at {status.UnixMs}");
+				await hb.RequestStream.WriteAsync(status);
 			}
 		}
-		catch (OperationCanceledException) { }
-		catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled) { }
-		catch (Exception ex) { Console.WriteLine($"[Sim:{deviceId}] HB read error: {ex.Message}"); }
-	}, cts.Token);
-
-	// Writer: periodically send status
-	var rnd = new Random(deviceId.GetHashCode());
-	try
-	{
-		while (!cts.IsCancellationRequested)
+		catch (OperationCanceledException error)
 		{
-			var health = PickHealth(rnd); // "OK" most of the time, sometimes "WARN"/"CRIT"
-			var status = new DeviceStatusRequest
+			Console.WriteLine($"[Device:{deviceId}] HB write cancelled: {error.Message}");
+		}
+		// Read responses from server
+		try
+		{
+			while (!ct.IsCancellationRequested)
 			{
-				DeviceId = deviceId,
-				Health = health,
-				Details = health == "CRIT" ? "Overheat detected" : (health == "WARN" ? "Temp trending high" : "All good"),
-				UnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-			};
-			await hb.RequestStream.WriteAsync(status);
-			await Task.Delay(TimeSpan.FromSeconds(5), cts.Token);
+				await foreach (DeviceStatusResponse res in hb.ResponseStream.ReadAllAsync())
+				{
+					Console.WriteLine("Device status: {Health}, advice from server: {Detail} at {Ms}", res.Health, res.Details, res.UnixMs);
+				}
+			}
+		}
+		catch (OperationCanceledException error)
+		{
+			Console.WriteLine($"[Device:{deviceId}] HB read cancelled: {error.Message}");
 		}
 	}
-	catch (OperationCanceledException) { }
-
-	// End request stream gracefully, wait for reader, dispose
-	try { await hb.RequestStream.CompleteAsync(); } catch { }
-	await readTask;
-	hb.Dispose();
-
-	static string PickHealth(Random r)
+	else
 	{
-		var roll = r.Next(100);
-		if (roll < 80) return "OK";
-		if (roll < 95) return "WARN";
-		return "CRIT";
+		// End request stream gracefully, wait for reader, dispose
+		try { await hb.RequestStream.CompleteAsync(); } catch { }
+		hb.Dispose();
+	}
+
+	static double PickHealth(Random r)
+	{
+		return r.Next(100);
 	}
 
 }
