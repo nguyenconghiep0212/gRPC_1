@@ -68,7 +68,7 @@ namespace IotGrpcLearning
 				}
 				return Results.BadRequest(new { Error = "Incorrect command!" });
 			});
-			//curl - X POST "https://localhost:7096/cmd/station-1/SetThreshold?metric=temperature&value=38.0"
+			//curl - X POST "https://localhost:7096/cmd/device-1/SetThreshold?metric=temperature&value=38.0"
 			
 			// Get device-channel mapping
 			app.MapGet("/cmd/channeldetail", ([FromServices] ICommandBus bus) =>

@@ -1,6 +1,7 @@
 ﻿using Grpc.Core;
 using IotGrpcLearning.Proto;
 using System.Net.NetworkInformation;
+using System.Threading;
 using System.Threading.Channels;
 
 namespace IotGrpcLearning.Services;
@@ -50,18 +51,18 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 		{
 			// simple validation
 			if (string.IsNullOrWhiteSpace(point.DeviceId) ||
-				double.IsNaN(point.Tempature) ||  double.IsInfinity(point.Tempature))
+				double.IsNaN(point.Tempature) || double.IsInfinity(point.Tempature))
 			{
 				rejected++;
 				_logger.LogWarning("Rejected telemetry: device={DeviceId} | tempature={Value}",
 					point.DeviceId, point.Tempature);
 				continue;
-			} 
+			}
 			deviceIdInferred ??= point.DeviceId;
 
 			// For now, just log; persistence comes later.
 			_logger.LogInformation("Telemetry: device={DeviceId} | tempature={Value} | at={Ts}",
-				point.DeviceId,  point.Tempature, point.UnixMs.ToString("dd/MM/yyyy HH:mm:ss.fff"));
+				point.DeviceId, point.Tempature, point.UnixMs.ToString("dd/MM/yyyy HH:mm:ss.fff"));
 
 			accepted++;
 		}
@@ -135,17 +136,23 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 		var ct = context.CancellationToken;
 
 		// We’ll infer deviceId from the first status
-		string? deviceId = null; 
-
+		string? deviceId = null;
 		try
 		{
-			await foreach (var status in requestStream.ReadAllAsync(ct))
+			//await foreach (var status in requestStream.ReadAllAsync(ct))
+			while (!ct.IsCancellationRequested)
 			{
+				var hasData = await requestStream.MoveNext(ct);
+                if (!hasData)
+                {
+					break;
+				}
+                var status = requestStream.Current;
 				deviceId ??= (status.DeviceId ?? string.Empty).Trim();
 				if (string.IsNullOrWhiteSpace(deviceId))
 				{
 					throw new RpcException(new Status(StatusCode.InvalidArgument, "device_id is required in Heartbeat"));
-				} 
+				}
 
 				var tsUtc = new DateTime();
 				_logger.LogInformation("HB <- {DeviceId}: Tempature={Temperature} - Health={Health} at={Ts}",
@@ -160,7 +167,8 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 						Details = "enter-safe-mode",
 						UnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
 					};
-					await responseStream.WriteAsync(res); 
+					await responseStream.WriteAsync(res);
+					_logger.LogInformation("HB -> {DeviceId}: Sending CRIT", deviceId);
 				}
 				// Optional: WARN -> RequestDiagnostics
 				else if (string.Equals(HealthAnalyze(status.Temperature), "WARN", StringComparison.OrdinalIgnoreCase))
@@ -172,18 +180,19 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 						UnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
 					};
 					await responseStream.WriteAsync(res);
+					_logger.LogInformation("HB -> {DeviceId}: Sending WARN", deviceId);
 				}
 			}
 		}
 		catch (OperationCanceledException)
 		{
 			_logger.LogInformation("Heartbeat stream cancelled for {DeviceId}", deviceId ?? "(unknown)");
-		} 
+		}
 
 		static string HealthAnalyze(double tempature)
 		{
-			if (tempature < 80) return "OK";
-			if (tempature < 95) return "WARN";
+			if (tempature < 100) return "OK";
+			if (tempature < 65) return "WARN";
 			return "CRIT";
 		}
 	}
