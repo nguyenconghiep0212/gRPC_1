@@ -154,7 +154,7 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 					throw new RpcException(new Status(StatusCode.InvalidArgument, "device_id is required in Heartbeat"));
 				}
 
-				var tsUtc = new DateTime();
+				var tsUtc = DateTimeOffset.FromUnixTimeMilliseconds(status.UnixMs).UtcDateTime;
 				_logger.LogInformation("HB <- {DeviceId}: Tempature={Temperature} - Health={Health} at={Ts}",
 					deviceId, status.Temperature, HealthAnalyze(status.Temperature), tsUtc);
 
@@ -184,15 +184,19 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 				}
 			}
 		}
-		catch (OperationCanceledException)
+		catch (IOException ioEx)
 		{
-			_logger.LogInformation("Heartbeat stream cancelled for {DeviceId}", deviceId ?? "(unknown)");
+			_logger.LogInformation($"[Device:{deviceId ?? "unknown"}]: Heartbeat client disconnected/reset - {ioEx.Message}");
+		}
+		catch (Exception ex)
+		{
+			_logger.LogInformation($"[Device:{deviceId ?? "unknown"}]: Heartbeat stream cancelled - {ex.Message}");
 		}
 
 		static string HealthAnalyze(double tempature)
 		{
-			if (tempature < 100) return "OK";
-			if (tempature < 65) return "WARN";
+			if (tempature < 65) return "OK";
+			if (tempature < 90) return "WARN";
 			return "CRIT";
 		}
 	}

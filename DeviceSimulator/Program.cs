@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using DevicesSimulator;
+using Grpc.Core;
 using Grpc.Net.Client;
 using IotGrpcLearning.Proto;
 using Microsoft.Extensions.Logging;
@@ -34,7 +35,7 @@ Option<string> fwVersionOption = new("--fw-version", ["-fw"])
 	DefaultValueFactory = (parseResult) => Environment.GetEnvironmentVariable("FWVERSION") ?? "1.0.1"
 };
 
-var heartbeatStates = new ConcurrentDictionary<string, (CancellationTokenSource Cts, Task SendTask, Task ReadTask, AsyncDuplexStreamingCall<DeviceStatusRequest, DeviceStatusResponse> Call)>();
+var heartbeatStates = new ConcurrentDictionary<string, HeartbeatSession>();
 
 var root = new RootCommand("Multi Device Simulator");
 root.Options.Add(serverOption);
@@ -126,7 +127,7 @@ async Task StartSubscribeCommands(string deviceId, DeviceGateway.DeviceGatewayCl
 	using CancellationTokenSource cts = new CancellationTokenSource();
 
 	Console.CancelKeyPress += (s, e) => { e.Cancel = true; cts.Cancel(); };
-
+		
 	Console.WriteLine("[Commands] Subscribing to commands... (press ENTER or Ctrl+C to quit)");
 	var call = client.SubscribeCommands(new DeviceId { Id = deviceId }, cancellationToken: cts.Token);
 
@@ -135,7 +136,7 @@ async Task StartSubscribeCommands(string deviceId, DeviceGateway.DeviceGatewayCl
 	{
 		await foreach (var cmd in call.ResponseStream.ReadAllAsync(cts.Token))
 		{
-			CommandRedirect(deviceId, cmd, client);
+			await CommandRedirect(deviceId, cmd, client);
 		}
 	}
 	catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
@@ -154,7 +155,7 @@ async Task StartSubscribeCommands(string deviceId, DeviceGateway.DeviceGatewayCl
 	}
 }
 
-async void CommandRedirect(string deviceId, IotGrpcLearning.Proto.Command cmd, DeviceGateway.DeviceGatewayClient client)
+async Task CommandRedirect(string deviceId, IotGrpcLearning.Proto.Command cmd, DeviceGateway.DeviceGatewayClient client)
 {
 	var args = cmd.Args.Count == 0 ? "{}" : "{" + string.Join(", ", cmd.Args.Select(kv => $"{kv.Key}={kv.Value}")) + "}";
 	Console.WriteLine($"[Commands] Received: Device={deviceId} cmdName={cmd.Name} args={args}");
@@ -165,57 +166,76 @@ async void CommandRedirect(string deviceId, IotGrpcLearning.Proto.Command cmd, D
 	var heartbeat = client.Heartbeat(cancellationToken: heartbeat_cts.Token);
 	if (cmd.Name == "StartHeartbeat")
 	{
-		// If already running, ignore or log
-		if (heartbeatStates.ContainsKey(deviceId))
-		{
-			Console.WriteLine($"[Commands] Heartbeat already running for {deviceId}");
-			return;
-		}
 
-		// Start both tasks concurrently
-		var sendTask = StartHeartBeat(deviceId, heartbeat, heartbeat_cts);
-		var readTask = ReadHeartbeatAnalyzedStatus(deviceId, heartbeat, heartbeat_cts);
-
-		if (!heartbeatStates.TryAdd(deviceId, (heartbeat_cts, sendTask, readTask, heartbeat)))
-		{
-			// unlikely, but ensure we cancel new one if we failed to add
-			try { heartbeat_cts.Cancel(); } catch { }
-			heartbeat.Dispose();
-			return;
-		}
-
-		_ = Task.Run(async () =>
-		{
-			try
-			{
-				await Task.WhenAll(sendTask, readTask);
-			}
-			catch (OperationCanceledException)
-			{
-				Console.WriteLine($"[Debug]|[Device:{deviceId}]: Heartbeat tasks cancelled.");
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine($"[Debug]|[Device:{deviceId}]: Heartbeat tasks error: {ex.Message}");
-			}
-			finally
-			{
-				Console.WriteLine($"[Info]|[Device:{deviceId}]: Heartbeat stopped.");
-			}
-		});
+		await StartHeartbeatSessionAsync(deviceId, client);
+		return;
 	}
 	if (cmd.Name == "StopHeartbeat")
 	{
-		await StopHeartbeat(deviceId, heartbeat, heartbeat_cts);
+		await StopHeartbeatSessionAsync(deviceId);
+		return;
 	}
 }
 
 // 4) Bi-di Heartbeat
 #region [HEARTBEAT]
+
+async Task StartHeartbeatSessionAsync(string deviceId, DeviceGateway.DeviceGatewayClient client)
+{
+    if (heartbeatStates.ContainsKey(deviceId))
+    {
+        Console.WriteLine($"[Commands] Heartbeat already running for {deviceId}");
+        return;
+    }
+
+    var cts = new CancellationTokenSource();
+    var call = client.Heartbeat(cancellationToken: cts.Token);
+
+    var sendTask = StartHeartBeat(deviceId, call, cts);
+    var readTask = ReadHeartbeatAnalyzedStatus(deviceId, call, cts);
+
+    var session = new HeartbeatSession
+    {
+        Cts = cts,
+        Call = call,
+        SendTask = sendTask,
+        ReadTask = readTask
+    };
+
+    if (!heartbeatStates.TryAdd(deviceId, session))
+    {
+        // If we lost the race, tear down what we created.
+        cts.Cancel();
+        call.Dispose();
+        cts.Dispose();
+        return;
+    }
+
+    _ = Task.Run(async () =>
+    {
+        try
+        {
+            await Task.WhenAll(sendTask, readTask);
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine($"[Device:{deviceId}] Heartbeat cancelled.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Device:{deviceId}] Heartbeat error: {ex.Message}");
+        }
+        finally
+        {
+            Console.WriteLine($"[Device:{deviceId}] Heartbeat tasks ended.");
+        }
+    });
+}
+
 async Task StartHeartBeat(string deviceId, AsyncDuplexStreamingCall<DeviceStatusRequest, DeviceStatusResponse> heartbeat, CancellationTokenSource cts)
 {
 	CancellationToken ct = cts.Token;
-	int heartbeatInterval = 21; // seconds
+	int heartbeatInterval = 2; // seconds
 	Console.WriteLine($"[Info]|[Device:{deviceId}]: Sending HeartBeat request...");
 	// Send temperature status when get request from server
 	var rnd = new Random(deviceId.GetHashCode());
@@ -262,7 +282,7 @@ async Task ReadHeartbeatAnalyzedStatus(string deviceId, AsyncDuplexStreamingCall
 			Console.WriteLine($"[Info]|[Device:{deviceId}]: Received server response: Health={res.Health}, Details={res.Details}, UnixMs={res.UnixMs}");
 			if (string.Equals(res.Health, "CRIT"))
 			{
-				await StopHeartbeat(deviceId, heartbeat, cts);
+				await StopHeartbeatSessionAsync(deviceId);
 			}
 		}
 	}
@@ -275,50 +295,37 @@ async Task ReadHeartbeatAnalyzedStatus(string deviceId, AsyncDuplexStreamingCall
 		Console.WriteLine($"[Debug]|[Device:{deviceId}]: HB read RpcException: {rex.Status} - {rex.Message}");
 	}
 }
-async Task StopHeartbeat(string deviceId, AsyncDuplexStreamingCall<DeviceStatusRequest, DeviceStatusResponse> heartbeat, CancellationTokenSource heartbeat_cts)
+async Task StopHeartbeatSessionAsync(string deviceId)
 {
-	// attempt coordinated shutdown via the shared state
-	if (heartbeatStates.TryRemove(deviceId, out var state))
-	{
-		try
-		{
-			Console.WriteLine($"[Info]|[Device:{deviceId}]: Stopping Heartbeat - attempting graceful completion...");
-			// First try to finish the request stream so server sees a normal EOF.
-			try
-			{
-				// then finish request stream so server receives normal EOF
-				try { await state.Call.RequestStream.CompleteAsync(); } catch (Exception e) { Console.WriteLine($"[Debug]|[Device:{deviceId}]: {e.Message}"); }
-				// signal cancellation so sender/reader stop
-				//heartbeat_cts.Cancel();
-				// wait for tasks to finish (they observe the token)
-				await Task.WhenAll(new[] { state.SendTask, state.ReadTask }.Where(t => t != null));
-				Console.WriteLine($"[Info]|[Device:{deviceId}] RequestStream.CompleteAsync() succeeded.");
-			}
-			catch (RpcException rex)
-			{
-				Console.WriteLine($"[Debug]|[Device:{deviceId}]: RequestStream.CompleteAsync() RpcException: {rex.Status} - {rex.Message}");
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine($"[Debug]|[Device:{deviceId}]: RequestStream.CompleteAsync() failed: {ex.Message}");
-			}
 
-			// Then cancel local work / readers to stop loops that write to the stream.
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine($"[Debug]|[Device:{deviceId}]: Error stopping heartbeat: {ex.Message}");
-		}
-		finally
-		{
-			try { heartbeat.Dispose(); } catch (Exception ex) { Console.WriteLine($"[Debug]|[Device:{deviceId}]: StreamingCall dispose fail: {ex.Message} "); }
-			try { heartbeat_cts.Dispose(); } catch (Exception ex) { Console.WriteLine($"[Debug]|[Device:{deviceId}]: cancel token dispose fail: {ex.Message} "); }
-			Console.WriteLine($"[Info]|[Device:{deviceId}]: Heartbeat stopped");
-		}
-	}
-	else
+	if (!heartbeatStates.TryRemove(deviceId, out var session))
 	{
-		Console.WriteLine($"[Info]|[Device:{deviceId}]: No active heartbeat to stop.");
+		Console.WriteLine($"[Device:{deviceId}] No active heartbeat to stop.");
+		return;
+	}
+
+	Console.WriteLine($"[Device:{deviceId}] Stopping heartbeat...");
+
+	try
+	{
+		// Stop local loops first (prevents writes after completion)
+		session.Cts.Cancel();
+
+		// Optional: try to complete request stream gracefully.
+		// If the call is already cancelled this may throw; safe to ignore.
+		try { await session.Call.RequestStream.CompleteAsync(); } catch { }
+
+		// Wait for tasks to end (but don’t hang forever)
+		var all = Task.WhenAll(session.SendTask, session.ReadTask);
+		var finished = await Task.WhenAny(all, Task.Delay(TimeSpan.FromSeconds(3)));
+		if (finished != all)
+			Console.WriteLine($"[Device:{deviceId}] Stop timed out; disposing call.");
+	}
+	finally
+	{
+		session.Call.Dispose();
+		session.Cts.Dispose();
+		Console.WriteLine($"[Device:{deviceId}] Heartbeat stopped.");
 	}
 }
 #endregion

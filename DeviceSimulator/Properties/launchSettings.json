@@ -4,7 +4,7 @@
       "commandName": "Project",
       "environmentVariables": {
         "SERVER": "https://localhost:7096",
-        "COUNT": "1",
+        "COUNT": "3",
         "PREFIX": "device",
         "PERIOD_MS": "1000",
         "FWVERSION": "1.0.1",
