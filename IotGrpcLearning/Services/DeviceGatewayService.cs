@@ -1,8 +1,6 @@
 ﻿using Grpc.Core;
 using IotGrpcLearning.Proto;
 using System.Net.NetworkInformation;
-using System.Threading;
-using System.Threading.Channels;
 
 namespace IotGrpcLearning.Services;
 
@@ -10,11 +8,13 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 {
 	private readonly ILogger<DeviceGatewayService> _logger;
 	private readonly ICommandBus _commandBus;
+	private readonly IDeviceRegistry _registry;
 
-	public DeviceGatewayService(ILogger<DeviceGatewayService> logger, ICommandBus commandBus)
+	public DeviceGatewayService(ILogger<DeviceGatewayService> logger, ICommandBus commandBus, IDeviceRegistry registry)
 	{
 		_logger = logger;
 		_commandBus = commandBus;
+		_registry = registry;
 	}
 
 	public override Task<DeviceInitResponse> Init(DeviceInitRequest request, ServerCallContext context)
@@ -139,16 +139,16 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 		string? deviceId = null;
 		try
 		{
-			//await foreach (var status in requestStream.ReadAllAsync(ct))
 			while (!ct.IsCancellationRequested)
 			{
 				var hasData = await requestStream.MoveNext(ct);
-                if (!hasData)
-                {
+				if (!hasData)
+				{
 					break;
 				}
-                var status = requestStream.Current;
+				var status = requestStream.Current;
 				deviceId ??= (status.DeviceId ?? string.Empty).Trim();
+
 				if (string.IsNullOrWhiteSpace(deviceId))
 				{
 					throw new RpcException(new Status(StatusCode.InvalidArgument, "device_id is required in Heartbeat"));
@@ -168,9 +168,10 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 						UnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
 					};
 					await responseStream.WriteAsync(res);
+					UpdateDeviceStatus(deviceId, res);
 					_logger.LogInformation("HB -> {DeviceId}: Sending CRIT", deviceId);
 				}
-				// Optional: WARN -> RequestDiagnostics
+				// Reactive rule: WARN -> RequestDiagnostics
 				else if (string.Equals(HealthAnalyze(status.Temperature), "WARN", StringComparison.OrdinalIgnoreCase))
 				{
 					DeviceStatusResponse res = new DeviceStatusResponse
@@ -180,6 +181,7 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 						UnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
 					};
 					await responseStream.WriteAsync(res);
+					UpdateDeviceStatus(deviceId, res);
 					_logger.LogInformation("HB -> {DeviceId}: Sending WARN", deviceId);
 				}
 			}
@@ -192,12 +194,26 @@ public class DeviceGatewayService : DeviceGateway.DeviceGatewayBase
 		{
 			_logger.LogInformation($"[Device:{deviceId ?? "unknown"}]: Heartbeat stream cancelled - {ex.Message}");
 		}
+		finally
+		{
+			if (!string.IsNullOrWhiteSpace(deviceId))
+				_registry.MarkDisconnected(deviceId);
+		}
 
 		static string HealthAnalyze(double tempature)
 		{
 			if (tempature < 65) return "OK";
 			if (tempature < 90) return "WARN";
 			return "CRIT";
+		}
+
+		void UpdateDeviceStatus(string deviceId, DeviceStatusResponse status)
+		{
+			if (string.IsNullOrWhiteSpace(deviceId))
+				throw new RpcException(new Status(StatusCode.InvalidArgument, "device_id is required in Heartbeat"));
+
+			_registry.MarkConnected(deviceId);
+			_registry.UpdateStatus(status);
 		}
 	}
 }

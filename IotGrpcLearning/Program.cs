@@ -13,8 +13,20 @@ namespace IotGrpcLearning
 			// Add services to the container.
 			builder.Services.AddGrpc();
 			builder.Services.AddSingleton<ICommandBus, InMemoryCommandBus>();
+			builder.Services.AddSingleton<IDeviceRegistry, DeviceRegistry>();
+
+			// Vue dev server default: http://localhost:5173
+			builder.Services.AddCors(o =>
+			{
+				o.AddPolicy("ui", p => p
+					.WithOrigins("http://localhost:5173")
+					.AllowAnyHeader()
+					.AllowAnyMethod());
+			});
 
 			var app = builder.Build();
+
+			app.UseCors("ui");
 
 			// Configure the HTTP request pipeline.
 			app.MapGrpcService<DeviceGatewayService>();

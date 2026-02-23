@@ -51,6 +51,7 @@ message DeviceStatusRequest {
   int64  unix_ms   = 3; // ms since epoch (time when status was observed)
 }
 message DeviceStatusResponse { 
+  string device_id = 1; 
   string health    = 2; // "OK" | "WARN" | "CRIT"
   string details   = 3; // optional free text
   int64  unix_ms   = 4; // ms since epoch (time when status was observed)
