@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "98/w7vE6+IM=",
+  "dgSpecHash": "VQswGZVjKts=",
   "success": true,
-  "projectFilePath": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\DeviceSimulator\\DevicesSimulator.csproj",
+  "projectFilePath": "D:\\Personal\\gRPC_BE\\DeviceSimulator\\DevicesSimulator.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\v-connguyen\\.nuget\\packages\\google.protobuf\\3.33.4\\google.protobuf.3.33.4.nupkg.sha512",
     "C:\\Users\\v-connguyen\\.nuget\\packages\\grpc.core.api\\2.76.0\\grpc.core.api.2.76.0.nupkg.sha512",

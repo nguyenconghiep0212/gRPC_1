@@ -478,11 +478,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\DeviceSimulator\\DevicesSimulator.csproj",
+      "projectUniqueName": "D:\\Personal\\gRPC_BE\\DeviceSimulator\\DevicesSimulator.csproj",
       "projectName": "DevicesSimulator",
-      "projectPath": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\DeviceSimulator\\DevicesSimulator.csproj",
+      "projectPath": "D:\\Personal\\gRPC_BE\\DeviceSimulator\\DevicesSimulator.csproj",
       "packagesPath": "C:\\Users\\v-connguyen\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\DeviceSimulator\\obj\\",
+      "outputPath": "D:\\Personal\\gRPC_BE\\DeviceSimulator\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

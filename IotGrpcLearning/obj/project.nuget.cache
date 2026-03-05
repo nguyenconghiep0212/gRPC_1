@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "eXys+UlLOnI=",
+  "dgSpecHash": "6Zx7jJacQ3o=",
   "success": true,
-  "projectFilePath": "C:\\Users\\v-connguyen\\source\\repos\\IotGrpcLearning\\IotGrpcLearning\\IotGrpcLearning.csproj",
+  "projectFilePath": "D:\\Personal\\gRPC_BE\\IotGrpcLearning\\IotGrpcLearning.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\v-connguyen\\.nuget\\packages\\google.protobuf\\3.27.0\\google.protobuf.3.27.0.nupkg.sha512",
     "C:\\Users\\v-connguyen\\.nuget\\packages\\grpc.aspnetcore\\2.64.0\\grpc.aspnetcore.2.64.0.nupkg.sha512",
