@@ -19,22 +19,12 @@ public class MachinesController : ControllerBase
 
 	// POST /api/machine/list
 	[HttpPost("list")]
-	public async Task<ActionResult<IEnumerable<MachineResponse>>> List(PaginationDto body)
+	public async Task<ActionResult<ListDto<MachineResponse>>> List(PaginationDto body)
 	{
-		var devices = await _service.GetAllAsync(body);
-		var result = devices.Select(d => new MachineResponse(
-			d.Id,
-			d.Name,
-			d.Alias,
-			d.Details,
-			d.VendorId,
-			d.Vendor,
-			d.PurchasePrice,
-			d.PurchaseDate,
-			d.SiteId,
-			d.Site));
+		Console.WriteLine($"Received list request with filter: {body.filters}");
+		ListDto<MachineResponse> result = await _service.GetAllAsync(body);
 
-		return Ok(devices);
+		return Ok(result);
 	}
 
 	// GET /api/machine/{machineId}/detail

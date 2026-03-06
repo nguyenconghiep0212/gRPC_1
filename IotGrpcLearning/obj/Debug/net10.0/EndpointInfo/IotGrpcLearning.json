@@ -589,26 +589,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/EmployeeResponse"
-                  }
+                  "$ref": "#/components/schemas/EmployeeResponseListDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/EmployeeResponse"
-                  }
+                  "$ref": "#/components/schemas/EmployeeResponseListDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/EmployeeResponse"
-                  }
+                  "$ref": "#/components/schemas/EmployeeResponseListDto"
                 }
               }
             }
@@ -783,6 +774,241 @@
         }
       }
     },
+    "/api/machine_info/list": {
+      "post": {
+        "tags": [
+          "MachineInfo"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaginationDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaginationDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaginationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MachineInfoDtoListDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MachineInfoDtoListDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MachineInfoDtoListDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/machine_info/{machineInfoId}/detail": {
+      "get": {
+        "tags": [
+          "MachineInfo"
+        ],
+        "parameters": [
+          {
+            "name": "machineInfoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MachineInfoDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MachineInfoDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MachineInfoDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/machine_info/create": {
+      "post": {
+        "tags": [
+          "MachineInfo"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MachineInfoDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MachineInfoDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MachineInfoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MachineInfoDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MachineInfoDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MachineInfoDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/machine_info/{machineInfoId}/update": {
+      "put": {
+        "tags": [
+          "MachineInfo"
+        ],
+        "parameters": [
+          {
+            "name": "machineInfoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MachineInfoDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MachineInfoDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MachineInfoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/machine_info/{machineInfoId}/delete": {
+      "delete": {
+        "tags": [
+          "MachineInfo"
+        ],
+        "parameters": [
+          {
+            "name": "machineInfoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/devices/list": {
       "post": {
         "tags": [
@@ -813,26 +1039,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MachineResponse"
-                  }
+                  "$ref": "#/components/schemas/MachineResponseListDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MachineResponse"
-                  }
+                  "$ref": "#/components/schemas/MachineResponseListDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MachineResponse"
-                  }
+                  "$ref": "#/components/schemas/MachineResponseListDto"
                 }
               }
             }
@@ -2183,26 +2400,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TestSuiteDto"
-                  }
+                  "$ref": "#/components/schemas/TestSuiteDtoListDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TestSuiteDto"
-                  }
+                  "$ref": "#/components/schemas/TestSuiteDtoListDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TestSuiteDto"
-                  }
+                  "$ref": "#/components/schemas/TestSuiteDtoListDto"
                 }
               }
             }
@@ -2436,26 +2644,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/VendorDto"
-                  }
+                  "$ref": "#/components/schemas/VendorDtoListDto"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/VendorDto"
-                  }
+                  "$ref": "#/components/schemas/VendorDtoListDto"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/VendorDto"
-                  }
+                  "$ref": "#/components/schemas/VendorDtoListDto"
                 }
               }
             }
@@ -2717,6 +2916,23 @@
         },
         "additionalProperties": false
       },
+      "EmployeeResponseListDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EmployeeResponse"
+            },
+            "nullable": true
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
       "EmployeesDto": {
         "type": "object",
         "properties": {
@@ -2794,6 +3010,45 @@
         },
         "additionalProperties": false
       },
+      "MachineInfoDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "machineId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "lineOverseer": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "testSuite": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MachineInfoDtoListDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MachineInfoDto"
+            },
+            "nullable": true
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
       "MachineResponse": {
         "type": "object",
         "properties": {
@@ -2840,6 +3095,23 @@
         },
         "additionalProperties": false
       },
+      "MachineResponseListDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MachineResponse"
+            },
+            "nullable": true
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
       "MachineStatusDto": {
         "type": "object",
         "properties": {
@@ -2875,6 +3147,16 @@
           "offset": {
             "type": "integer",
             "format": "int32"
+          },
+          "filters": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -3001,6 +3283,23 @@
         },
         "additionalProperties": false
       },
+      "TestSuiteDtoListDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TestSuiteDto"
+            },
+            "nullable": true
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
       "VendorDto": {
         "type": "object",
         "properties": {
@@ -3011,6 +3310,23 @@
           "name": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "VendorDtoListDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VendorDto"
+            },
+            "nullable": true
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -3029,6 +3345,9 @@
     },
     {
       "name": "IotGrpcLearning"
+    },
+    {
+      "name": "MachineInfo"
     },
     {
       "name": "Machines"

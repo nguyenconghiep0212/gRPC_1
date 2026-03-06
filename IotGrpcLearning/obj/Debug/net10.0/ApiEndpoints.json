@@ -220,7 +220,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[IotGrpcLearning.Models.MachineResponse, IotGrpcLearning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "IotGrpcLearning.Models.ListDto\u00601[[IotGrpcLearning.Models.MachineResponse, IotGrpcLearning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -511,7 +511,142 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[IotGrpcLearning.Models.EmployeeResponse, IotGrpcLearning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "IotGrpcLearning.Models.ListDto\u00601[[IotGrpcLearning.Models.EmployeeResponse, IotGrpcLearning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "IotGrpcLearning.Controllers.MachineInfoController",
+    "Method": "Delete",
+    "RelativePath": "api/machine_info/{machineInfoId}/delete",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "machineInfoId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Boolean",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "IotGrpcLearning.Controllers.MachineInfoController",
+    "Method": "Detail",
+    "RelativePath": "api/machine_info/{machineInfoId}/detail",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "machineInfoId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "IotGrpcLearning.Models.MachineInfoDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "IotGrpcLearning.Controllers.MachineInfoController",
+    "Method": "Update",
+    "RelativePath": "api/machine_info/{machineInfoId}/update",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "machineInfoId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "IotGrpcLearning.Models.MachineInfoDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Boolean",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "IotGrpcLearning.Controllers.MachineInfoController",
+    "Method": "Create",
+    "RelativePath": "api/machine_info/create",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "IotGrpcLearning.Models.MachineInfoDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "IotGrpcLearning.Models.MachineInfoDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "IotGrpcLearning.Controllers.MachineInfoController",
+    "Method": "List",
+    "RelativePath": "api/machine_info/list",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "body",
+        "Type": "IotGrpcLearning.Models.PaginationDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "IotGrpcLearning.Models.ListDto\u00601[[IotGrpcLearning.Models.MachineInfoDto, IotGrpcLearning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -1296,7 +1431,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[IotGrpcLearning.Models.TestSuiteDto, IotGrpcLearning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "IotGrpcLearning.Models.ListDto\u00601[[IotGrpcLearning.Models.TestSuiteDto, IotGrpcLearning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -1431,7 +1566,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[IotGrpcLearning.Models.VendorDto, IotGrpcLearning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "IotGrpcLearning.Models.ListDto\u00601[[IotGrpcLearning.Models.VendorDto, IotGrpcLearning, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",

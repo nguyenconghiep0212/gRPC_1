@@ -8,4 +8,12 @@ public record TestSuiteDto(
 	string Detail
 	);
 
+public record TestSuiteResponse(
+	int Id,
+	string Name,
+	int MachineId,
+	string Machine,
+	string Path,
+	string Detail
+	);
 

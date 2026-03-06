@@ -52,9 +52,10 @@ namespace IotGrpcLearning.Infrastructure
 				"Employees",
 				"Projects",
 				"MachineStatus",
+				"MachinesInfo",
 				"Machines"
 				// Relationship tables last
-			} ;
+			};
 
 			using var conn = _dbFactory.CreateConnection();
 			await conn.OpenAsync(ct);
@@ -73,7 +74,16 @@ namespace IotGrpcLearning.Infrastructure
 
 				// Delete all rows
 				cmd.CommandText = $"DELETE FROM \"{table}\";";
-				await cmd.ExecuteNonQueryAsync(ct);
+				try
+				{
+					await cmd.ExecuteNonQueryAsync(ct);
+
+				}
+				catch
+				{
+					Console.WriteLine($"Warning: Could not clear table '{table}'. It may not exist.");
+					// ignore - table may not exist
+				}
 
 				// Reset AUTOINCREMENT counter for the table if present
 				cmd.CommandText = $"DELETE FROM sqlite_sequence WHERE name = '{table}';";
@@ -83,6 +93,7 @@ namespace IotGrpcLearning.Infrastructure
 				}
 				catch
 				{
+					Console.WriteLine($"Warning: Could not reset AUTOINCREMENT for table '{table}'. It may not exist or may not use AUTOINCREMENT.");
 					// ignore - sqlite_sequence may not exist or table may not use AUTOINCREMENT
 				}
 			}
@@ -100,7 +111,7 @@ namespace IotGrpcLearning.Infrastructure
 		/// Uses a transaction and parameterized SQL to avoid SQL injection.
 		/// </summary>
 		public async Task SeedVendorAsync(CancellationToken ct = default)
-		{ 
+		{
 			VendorDto[] samples = JsonFileLoader.LoadFromJson<VendorDto>(Path.Combine("Infrastructure", "SeedData", "vendors.json"), _contentRoot);
 
 			using var conn = _dbFactory.CreateConnection();
@@ -201,7 +212,7 @@ namespace IotGrpcLearning.Infrastructure
 
 		public async Task SeedRolesAsync(CancellationToken ct = default)
 		{
-			RolesDto[] samples = JsonFileLoader.LoadFromJson<RolesDto>(Path.Combine("Infrastructure", "SeedData", "roles.json"), _contentRoot); 
+			RolesDto[] samples = JsonFileLoader.LoadFromJson<RolesDto>(Path.Combine("Infrastructure", "SeedData", "roles.json"), _contentRoot);
 
 			using var conn = _dbFactory.CreateConnection();
 			await conn.OpenAsync(ct);
@@ -232,7 +243,7 @@ namespace IotGrpcLearning.Infrastructure
 		}
 
 		public async Task SeedDivisionAsync(CancellationToken ct = default)
-		{ 
+		{
 			DivisionsDto[] samples = JsonFileLoader.LoadFromJson<DivisionsDto>(Path.Combine("Infrastructure", "SeedData", "divisions.json"), _contentRoot);
 
 			using var conn = _dbFactory.CreateConnection();
@@ -373,16 +384,10 @@ namespace IotGrpcLearning.Infrastructure
 			tx.Commit();
 		}
 
-		readonly MachineSeed[] samples =
-				[
-					new MachineSeed("Line-01","Primary assembly line","Semiki",120000.00m,DateTime.UtcNow.AddYears(-2),"Korea","Line-01"),
-					new MachineSeed("Line-02","Secondary assembly line","Semiki",95000.50m,DateTime.UtcNow.AddYears(-1).AddMonths(-3),"Korea","Line-02"),
-					new MachineSeed("Furnace-1","High-temp reflow furnace","HCL",45000.75m,DateTime.UtcNow.AddYears(-3),"China","Furnace-1"),
-					new MachineSeed("Tester-XL","Automated inspection tester","MicroTest",30000.00m,DateTime.UtcNow.AddYears(-4).AddMonths(6),"Vietnam","Tester-XL"),
-					new MachineSeed("RobotArm-7","Pick-and-place robotic arm","Axxon",75000.00m,DateTime.UtcNow.AddYears(-1),"Indonesia","RobotArm-7")
-				];
+
 		public async Task SeedMachineAsync(CancellationToken ct = default)
 		{
+			MachineDto[] samples = JsonFileLoader.LoadFromJson<MachineDto>(Path.Combine("Infrastructure", "SeedData", "machines.json"), _contentRoot);
 
 			using var conn = _dbFactory.CreateConnection();
 			await conn.OpenAsync(ct);
@@ -408,7 +413,6 @@ namespace IotGrpcLearning.Infrastructure
                     @purchase_price,
                     @purchase_date, 
                     @site
-                WHERE NOT EXISTS (SELECT 1 FROM Machines WHERE name = @name LIMIT 1);
             ";
 
 			var pName = cmd.CreateParameter(); pName.ParameterName = "@name"; cmd.Parameters.Add(pName);
@@ -424,27 +428,28 @@ namespace IotGrpcLearning.Infrastructure
 			{
 				ct.ThrowIfCancellationRequested();
 				// ensure vendor and site exist and get their ids
-				var vendorId = await EnsureLookupIdAsync(conn, tx, ct, "Vendors", sample.VendorName, "", null);
-				var siteId = await EnsureLookupIdAsync(conn, tx, ct, "Sites", sample.SiteName, "location, address", "'', ''");
 
 				pName.Value = sample.Name;
 				pAlias.Value = sample.Name;
 				pDetails.Value = sample.Details ?? (object)DBNull.Value;
-				pVendor.Value = vendorId;
+				pVendor.Value = sample.Vendor;
 				// SQLite accepts REAL for decimal; convert to double
 				pPurchasePrice.Value = Convert.ToDouble(sample.PurchasePrice);
 				pPurchaseDate.Value = DateTime.SpecifyKind(sample.PurchaseDate, DateTimeKind.Utc);
-				pSite.Value = siteId;
+				pSite.Value = sample.Site;
 
 				await cmd.ExecuteNonQueryAsync(ct);
 			}
 
 			tx.Commit();
 			await SeedMachineStatus(ct);
+			await SeedMachineInfo(ct);
 		}
 
 		public async Task SeedMachineStatus(CancellationToken ct = default)
 		{
+			MachineDto[] samples = JsonFileLoader.LoadFromJson<MachineDto>(Path.Combine("Infrastructure", "SeedData", "machines.json"), _contentRoot);
+
 			using var conn = _dbFactory.CreateConnection();
 			await conn.OpenAsync(ct);
 			using var tx = conn.BeginTransaction();
@@ -470,12 +475,11 @@ namespace IotGrpcLearning.Infrastructure
 			var pIsOnline = cmd.CreateParameter(); pIsOnline.ParameterName = "@is_online"; cmd.Parameters.Add(pIsOnline);
 			var pLastOnline = cmd.CreateParameter(); pLastOnline.ParameterName = "@last_online"; cmd.Parameters.Add(pLastOnline);
 
-
+			int index = 1;
 			foreach (var sample in samples)
 			{
 				ct.ThrowIfCancellationRequested();
-				// ensure vendor and site exist and get their ids
-				var MachineId = await EnsureLookupIdAsync(conn, tx, ct, "Machines", sample.Name, "", null);
+				var MachineId = index;
 
 				pMachine.Value = MachineId;
 				pHealth.Value = MachineHealth.Unavailable;
@@ -483,6 +487,69 @@ namespace IotGrpcLearning.Infrastructure
 				pLastOnline.Value = DateTime.Now;
 
 				await cmd.ExecuteNonQueryAsync(ct);
+				index++;
+			}
+
+			tx.Commit();
+		}
+
+		public async Task SeedMachineInfo(CancellationToken ct = default)
+		{
+			MachineDto[] samples = JsonFileLoader.LoadFromJson<MachineDto>(Path.Combine("Infrastructure", "SeedData", "machines.json"), _contentRoot);
+
+			using var conn = _dbFactory.CreateConnection();
+			await conn.OpenAsync(ct);
+			using var tx = conn.BeginTransaction();
+			using var cmd = conn.CreateCommand();
+			cmd.Transaction = tx;
+
+			cmd.CommandText = @"
+                INSERT INTO MachinesInfo ( 
+                    machine,
+					line_overseer_id
+                )
+                SELECT 
+                    @machine,
+					@line_overseer_id
+                WHERE NOT EXISTS (SELECT 1 FROM MachineStatus WHERE machine = @machine LIMIT 1);
+            ";
+			var pMachine = cmd.CreateParameter(); pMachine.ParameterName = "@machine"; cmd.Parameters.Add(pMachine);
+			var pLineOverseer = cmd.CreateParameter(); pLineOverseer.ParameterName = "@line_overseer_id"; cmd.Parameters.Add(pLineOverseer);
+			//var pTestSuite = cmd.CreateParameter(); pTestSuite.ParameterName = "@test_suite"; cmd.Parameters.Add(pTestSuite);
+
+			static int getOverseer(int site) {
+				int overseer = 0;
+				switch (site)
+				{
+					case 1:
+						overseer = 11;
+						break;
+					case 2:
+						overseer = 5;
+						break;
+					case 5:
+						overseer = 15;
+						break;
+					default:
+						overseer = 0;
+						break;
+
+				}
+				return overseer;
+			}
+
+			int index = 1;
+			foreach (var sample in samples)
+			{
+				ct.ThrowIfCancellationRequested();
+				var MachineId = index;
+
+				pMachine.Value = MachineId;
+				pLineOverseer.Value = getOverseer(index);
+				//pTestSuite.Value = null;
+
+				await cmd.ExecuteNonQueryAsync(ct);
+				index++;
 			}
 
 			tx.Commit();
@@ -526,7 +593,7 @@ namespace IotGrpcLearning.Infrastructure
 
 			var newId = await ins.ExecuteScalarAsync(ct);
 			return Convert.ToInt32(newId);
-		} 
+		}
 		#endregion
 	}
 }

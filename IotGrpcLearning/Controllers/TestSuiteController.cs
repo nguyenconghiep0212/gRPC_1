@@ -38,17 +38,10 @@ namespace IotGrpcLearning.Controllers
 
 		// POST /api/testsuite/list
 		[HttpPost("list")]
-		public async Task<ActionResult<IEnumerable<TestSuiteDto>>> List(PaginationDto body)
+		public async Task<ActionResult<ListDto<TestSuiteDto>>> List(PaginationDto body)
 		{
-			var devices = await _service.GetAllAsync(body);
-			var result = devices.Select(d => new TestSuiteDto(
-				d.Id,
-				d.Name,
-				d.MachineId,
-				d.Path,
-				d.Detail
-				));
-			return Ok(devices);
+			ListDto<TestSuiteDto> result = await _service.GetAllAsync(body);
+			return Ok(result);
 		}
 
 		// GET /api/testsuite/{testsuiteId}/detail

@@ -4,7 +4,7 @@ namespace IotGrpcLearning.Interfaces;
 
 public interface IMachineService
 {
-	Task<IEnumerable<MachineResponse>> GetAllAsync(PaginationDto body, CancellationToken ct = default);
+	Task<ListDto<MachineResponse>> GetAllAsync(PaginationDto body, CancellationToken ct = default);
 	Task<MachineResponse?> GetAsync(int id, CancellationToken ct = default);
 	Task<MachineDto> CreateAsync(MachineDto dto, CancellationToken ct = default);
 	Task<bool> UpdateAsync(int id, MachineDto dto, CancellationToken ct = default);

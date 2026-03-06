@@ -1,7 +1,10 @@
 ﻿using IotGrpcLearning.Infrastructure;
 using IotGrpcLearning.Interfaces;
 using IotGrpcLearning.Models;
+using IotGrpcLearning.Proto;
 using Microsoft.Data.Sqlite;
+using System.Reflection.PortableExecutable;
+using System.Text;
 
 namespace IotGrpcLearning.Services
 {
@@ -64,14 +67,39 @@ namespace IotGrpcLearning.Services
 			return rows > 0;
 		}
 
-		public async Task<IEnumerable<MachineResponse>> GetAllAsync(PaginationDto body, CancellationToken ct = default)
+		public async Task<ListDto<MachineResponse>> GetAllAsync(PaginationDto body, CancellationToken ct = default)
 		{
 			var list = new List<MachineResponse>();
+			string tableName = "Machines";
 			using var conn = _dbFactory.CreateConnection();
 			await conn.OpenAsync(ct);
 
 			using var cmd = conn.CreateCommand();
-			cmd.CommandText = $"SELECT id, name, alias, details, vendor, purchase_price, purchase_date, site FROM Machines ORDER BY id LIMIT {body.limit} OFFSET {body.offset};";
+
+			// Start building the base query
+			var queryBuilder = new StringBuilder($"SELECT id, name, alias, details, vendor, purchase_price, purchase_date, site FROM {tableName}");
+			if (body.filters != null)
+			{
+				// Call the BuildFilterQuery method
+				var (filterQuery, parameters) = _helper.BuildFilterQuery(tableName, body.filters);
+				if (!string.IsNullOrEmpty(filterQuery))
+				{
+					queryBuilder.Append(filterQuery);
+				}
+				if (parameters.Count > 0)
+				{
+					foreach (var parameter in parameters)
+					{
+						cmd.Parameters.Add(parameter);
+					}
+				}
+			}
+			// Adding pagination and ordering
+			queryBuilder.Append($" ORDER BY id LIMIT {body.limit} OFFSET {body.offset};");
+
+			cmd.CommandText = queryBuilder.ToString();
+			Console.WriteLine($"Total parameters set: {cmd.Parameters.Count}");
+
 			using var rdr = await cmd.ExecuteReaderAsync(ct);
 
 			while (await rdr.ReadAsync(ct))
@@ -96,7 +124,11 @@ namespace IotGrpcLearning.Services
 
 				list.Add(machineResponse);
 			}
-			return list;
+			int total = await _helper.GetTotalCountWithConditions(conn, ct, tableName, body.filters);
+
+			ListDto<MachineResponse> result = new ListDto<MachineResponse>(list, total);
+
+			return result;
 		}
 
 		public async Task<MachineResponse?> GetAsync(int id, CancellationToken ct = default)

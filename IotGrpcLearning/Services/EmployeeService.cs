@@ -37,13 +37,17 @@ namespace IotGrpcLearning.Services
 
 			return new EmployeesDto(newId, dto.AvatarUrl ?? string.Empty, dto.Name ?? string.Empty, dto.Email ?? string.Empty, dto.RoleId, dto.DivisionId, dto.SupervisorId, dto.SiteId);
 		}
-		public async Task<IEnumerable<EmployeeResponse>> GetAllAsync(PaginationDto body, CancellationToken ct = default)
+		public async Task<ListDto<EmployeeResponse>> GetAllAsync(PaginationDto body, CancellationToken ct = default)
 		{
 			using var conn = _dbFactory.CreateConnection();
 			await conn.OpenAsync(ct);
 			using var cmd = conn.CreateCommand();
-			cmd.CommandText = $"SELECT id, avatar_url, name, email, role_id, division_id, supervisor, site FROM Employees LIMIT {body.limit} OFFSET {body.offset};";
+
 			var employees = new List<EmployeeResponse>();
+			string tableName = "Employees";
+
+			using var cmdCount = conn.CreateCommand();
+			cmd.CommandText = $"SELECT id, avatar_url, name, email, role_id, division_id, supervisor, site FROM {tableName} LIMIT {body.limit} OFFSET {body.offset};";
 			using var reader = await cmd.ExecuteReaderAsync(ct);
 			while (await reader.ReadAsync(ct))
 			{
@@ -62,7 +66,11 @@ namespace IotGrpcLearning.Services
 				string site = await _helper.GetPropertyTableAsync(conn, ct, "Sites", "id", site_id.ToString(), "name") ?? string.Empty;
 				employees.Add(new EmployeeResponse(id, avatar_url, name, email, role_id, role, division_id, division, supervisor_id, supervisor, site_id, site));
 			}
-			return employees;
+		 
+			int total = await _helper.GetTotalCountFromTable(conn, ct, tableName);
+
+			ListDto<EmployeeResponse> result = new ListDto<EmployeeResponse>(employees, total);
+			return result;
 		}
 
 		public async Task<bool> UpdateAsync(int id, EmployeesDto dto, CancellationToken ct = default)

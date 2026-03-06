@@ -1,0 +1,218 @@
+[
+	{
+		"Name": "Automated Optical Inspection",
+		"Alias": "AOI",
+		"Details": "Assembly quality verification",
+		"Vendor": 1,
+		"PurchasePrice": 100000,
+		"PurchaseDate": "2020-04-01T00:00:00",
+		"Site": 1
+	},
+	{
+		"Name": "Functional Test Equipment",
+		"Alias": "FCT",
+		"Details": "Validate device functionality",
+		"Vendor": 1,
+		"PurchasePrice": 25000,
+		"PurchaseDate": "2020-02-01T00:00:00",
+		"Site": 1
+	},
+	{
+		"Name": "System Integration Test",
+		"Alias": "SIT",
+		"Details": "Validate device functionality",
+		"Vendor": 1,
+		"PurchasePrice": 40000,
+		"PurchaseDate": "2021-06-11T00:00:00",
+		"Site": 1
+	},
+	{
+		"Name": "Connector",
+		"Alias": "Connector",
+		"Details": "Validate I/O and high‑speed interfaces",
+		"Vendor": 1,
+		"PurchasePrice": 31000,
+		"PurchaseDate": "2020-02-16T00:00:00",
+		"Site": 1
+	},
+	{
+		"Name": "Software Load",
+		"Alias": "SWLoad",
+		"Details": "Prepare devices for test and shipment",
+		"Vendor": 1,
+		"PurchasePrice": 10000,
+		"PurchaseDate": "2020-02-20T00:00:00",
+		"Site": 1
+	},
+	{
+		"Name": "TrackPad",
+		"Alias": "TrackPad",
+		"Details": "Validate I/O",
+		"Vendor": 1,
+		"PurchasePrice": 750000,
+		"PurchaseDate": "2020-01-15T00:00:00",
+		"Site": 1
+	},
+	{
+		"Name": "Human Interface Device",
+		"Alias": "HID",
+		"Details": "Validate input and user‑interaction hardware",
+		"Vendor": 1,
+		"PurchasePrice": 95000,
+		"PurchaseDate": "2020-01-01T00:00:00",
+		"Site": 1
+	},
+	{
+		"Name": "Radio Frequency Device",
+		"Alias": "RF",
+		"Details": "validate radio‑frequency performance",
+		"Vendor": 1,
+		"PurchasePrice": 1000000,
+		"PurchaseDate": "2020-01-01T00:00:00",
+		"Site": 1
+	},
+	{
+		"Name": "Automated Optical Inspection",
+		"Alias": "AOI",
+		"Details": "Assembly quality verification",
+		"Vendor": 3,
+		"PurchasePrice": 100000,
+		"PurchaseDate": "2020-04-01T00:00:00",
+		"Site": 2
+	},
+	{
+		"Name": "Functional Test Equipment",
+		"Alias": "FCT",
+		"Details": "Validate device functionality",
+		"Vendor": 3,
+		"PurchasePrice": 25000,
+		"PurchaseDate": "2020-02-01T00:00:00",
+		"Site": 2
+	},
+	{
+		"Name": "System Integration Test",
+		"Alias": "SIT",
+		"Details": "Validate device functionality",
+		"Vendor": 3,
+		"PurchasePrice": 40000,
+		"PurchaseDate": "2021-06-11T00:00:00",
+		"Site": 2
+	},
+	{
+		"Name": "Connector",
+		"Alias": "Connector",
+		"Details": "Validate I/O and high‑speed interfaces",
+		"Vendor": 4,
+		"PurchasePrice": 31000,
+		"PurchaseDate": "2020-02-16T00:00:00",
+		"Site": 2
+	},
+	{
+		"Name": "Software Load",
+		"Alias": "SWLoad",
+		"Details": "Prepare devices for test and shipment",
+		"Vendor": 4,
+		"PurchasePrice": 10000,
+		"PurchaseDate": "2020-02-20T00:00:00",
+		"Site": 2
+	},
+	{
+		"Name": "TrackPad",
+		"Alias": "TrackPad",
+		"Details": "Validate I/O",
+		"Vendor": 4,
+		"PurchasePrice": 750000,
+		"PurchaseDate": "2020-01-15T00:00:00",
+		"Site": 2
+	},
+	{
+		"Name": "Human Interface Device",
+		"Alias": "HID",
+		"Details": "Validate input and user‑interaction hardware",
+		"Vendor": 3,
+		"PurchasePrice": 95000,
+		"PurchaseDate": "2020-01-01T00:00:00",
+		"Site": 2
+	},
+	{
+		"Name": "Radio Frequency Device",
+		"Alias": "RF",
+		"Details": "validate radio‑frequency performance",
+		"Vendor": 3,
+		"PurchasePrice": 1000000,
+		"PurchaseDate": "2020-01-01T00:00:00",
+		"Site": 2
+	},
+	{
+		"Name": "Automated Optical Inspection",
+		"Alias": "AOI",
+		"Details": "Assembly quality verification",
+		"Vendor": 2,
+		"PurchasePrice": 100000,
+		"PurchaseDate": "2020-04-01T00:00:00",
+		"Site": 5
+	},
+	{
+		"Name": "Functional Test Equipment",
+		"Alias": "FCT",
+		"Details": "Validate device functionality",
+		"Vendor": 2,
+		"PurchasePrice": 25000,
+		"PurchaseDate": "2020-02-01T00:00:00",
+		"Site": 5
+	},
+	{
+		"Name": "System Integration Test",
+		"Alias": "SIT",
+		"Details": "Validate device functionality",
+		"Vendor": 2,
+		"PurchasePrice": 40000,
+		"PurchaseDate": "2021-06-11T00:00:00",
+		"Site": 5
+	},
+	{
+		"Name": "Connector",
+		"Alias": "Connector",
+		"Details": "Validate I/O and high‑speed interfaces",
+		"Vendor": 1,
+		"PurchasePrice": 31000,
+		"PurchaseDate": "2020-02-16T00:00:00",
+		"Site": 5
+	},
+	{
+		"Name": "Software Load",
+		"Alias": "SWLoad",
+		"Details": "Prepare devices for test and shipment",
+		"Vendor": 1,
+		"PurchasePrice": 10000,
+		"PurchaseDate": "2020-02-20T00:00:00",
+		"Site": 5
+	},
+	{
+		"Name": "TrackPad",
+		"Alias": "TrackPad",
+		"Details": "Validate I/O",
+		"Vendor": 1,
+		"PurchasePrice": 750000,
+		"PurchaseDate": "2020-01-15T00:00:00",
+		"Site": 5
+	},
+	{
+		"Name": "Human Interface Device",
+		"Alias": "HID",
+		"Details": "Validate input and user‑interaction hardware",
+		"Vendor": 1,
+		"PurchasePrice": 95000,
+		"PurchaseDate": "2020-01-01T00:00:00",
+		"Site": 5
+	},
+	{
+		"Name": "Radio Frequency Device",
+		"Alias": "RF",
+		"Details": "validate radio‑frequency performance",
+		"Vendor": 2,
+		"PurchasePrice": 1000000,
+		"PurchaseDate": "2020-01-01T00:00:00",
+		"Site": 5
+	}
+]

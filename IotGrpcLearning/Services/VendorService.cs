@@ -3,6 +3,7 @@ using IotGrpcLearning.Infrastructure;
 using IotGrpcLearning.Interfaces;
 using IotGrpcLearning.Models;
 using Microsoft.Data.Sqlite;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Xml.Linq;
 
@@ -11,8 +12,10 @@ namespace IotGrpcLearning.Services
 	public sealed class VendorService : IVendor
 	{
 		private readonly ISqliteConnectionFactory _dbFactory;
+		private readonly Helper _helper;
 		public VendorService(ISqliteConnectionFactory dbFactory)
 		{
+			_helper	= new Helper();
 			_dbFactory = dbFactory ?? throw new ArgumentNullException(nameof(dbFactory));
 		}
 
@@ -35,21 +38,28 @@ namespace IotGrpcLearning.Services
 
 			return new VendorDto(newId, dto.Name ?? string.Empty);
 		}
-		public async Task<IEnumerable<VendorDto>> GetAllAsync(PaginationDto body, CancellationToken ct = default)
+		public async Task<ListDto<VendorDto>> GetAllAsync(PaginationDto body, CancellationToken ct = default)
 		{
 			using var conn = _dbFactory.CreateConnection();
 			await conn.OpenAsync(ct);
 			using var cmd = conn.CreateCommand();
-			cmd.CommandText = $"SELECT id, name FROM Vendors LIMIT {body.limit} OFFSET {body.offset};";
-			var vendors = new List<VendorDto>();
+
+			var list = new List<VendorDto>();
+			string tableName = "Vendors";
+
+			cmd.CommandText = $"SELECT id, name FROM {tableName} LIMIT {body.limit} OFFSET {body.offset};";
 			using var reader = await cmd.ExecuteReaderAsync(ct);
 			while (await reader.ReadAsync(ct))
 			{
 				var id = reader.GetInt32(0);
 				var name = reader.GetString(1);
-				vendors.Add(new VendorDto(id, name));
+				list.Add(new VendorDto(id, name));
 			}
-			return vendors;
+			int total = await _helper.GetTotalCountFromTable(conn, ct, tableName);
+
+			ListDto<VendorDto> result = new ListDto<VendorDto>(list, total);
+
+			return result;
 		}
 
 		public async Task<bool> UpdateAsync(int id, VendorDto dto, CancellationToken ct = default)

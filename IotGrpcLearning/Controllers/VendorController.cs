@@ -31,13 +31,9 @@ namespace IotGrpcLearning.Controllers
 
 		// POST /api/vendors/list
 		[HttpPost("list")]
-		public async Task<ActionResult<IEnumerable<VendorDto>>> List(PaginationDto body)
+		public async Task<ActionResult<ListDto<VendorDto>>> List(PaginationDto body)
 		{
 			var devices = await _service.GetAllAsync(body);
-			var result = devices.Select(d => new VendorDto(
-				d.Id,
-				d.Name
-				));
 			return Ok(devices);
 		}
 

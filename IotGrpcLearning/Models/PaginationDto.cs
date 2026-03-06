@@ -2,6 +2,7 @@
 
 public record PaginationDto(
 	int limit,
-	int offset
+	int offset,
+	Dictionary<string, string[]>? filters
 	);
 

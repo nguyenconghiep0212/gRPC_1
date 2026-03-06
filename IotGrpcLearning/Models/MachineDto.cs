@@ -10,7 +10,7 @@ public record MachineDto(
     DateTime PurchaseDate,
     int Site);
 
-
+ 
 public record MachineResponse(
 	int Id,
 	string Name,

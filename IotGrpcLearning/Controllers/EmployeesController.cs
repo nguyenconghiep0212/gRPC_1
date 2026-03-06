@@ -37,24 +37,10 @@ namespace IotGrpcLearning.Controllers
 
 		// POST /api/employees/list
 		[HttpPost("list")]
-		public async Task<ActionResult<IEnumerable<EmployeeResponse>>> List(PaginationDto body)
+		public async Task<ActionResult<ListDto<EmployeeResponse>>> List(PaginationDto body)
 		{
-			var employees = await _service.GetAllAsync(body);
-			var result = employees.Select(d => new EmployeeResponse(
-				d.Id,
-				d.AvatarUrl,
-				d.Name,
-				d.Email,
-				d.RoleId,
-				d.Role,
-				d.DivisionId,
-				d.Division,
-				d.SupervisorId,
-				d.Supervisor,
-				d.SiteId,
-				d.Site
-				));
-			return Ok(employees);
+			ListDto<EmployeeResponse> result = await _service.GetAllAsync(body);
+			return Ok(result);
 		}
 
 		// GET /api/employees/{employeeId}/detail
