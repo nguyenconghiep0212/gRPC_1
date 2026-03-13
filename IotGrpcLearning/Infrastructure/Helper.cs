@@ -4,152 +4,168 @@ using Microsoft.Data.Sqlite;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace IotGrpcLearning.Infrastructure
+namespace IotGrpcLearning.Infrastructure;
+
+public class Helper : IHelper
 {
-	public class Helper: IHelper
-	{
-		public async Task<string?> GetPropertyTableAsync(SqliteConnection conn, CancellationToken ct, string table, string column, string columnValue, string getColumn)
-		{
-			// try select
-			using var sel = conn.CreateCommand();
-			sel.CommandText = $"SELECT {getColumn} FROM \"{table}\" WHERE {column} = @{column} LIMIT 1;";
-			var pSel = sel.CreateParameter();
-			pSel.ParameterName = $"@{column}";
-			pSel.Value = columnValue;
-			sel.Parameters.Add(pSel);
+    public async Task<string?> GetPropertyTableAsync(
+        SqliteConnection conn,
+        CancellationToken ct,
+        string table,
+        string column,
+        string columnValue,
+        string getColumn)
+    {
+        // Validate identifiers
+        var safeTable = IdentifierSanitizer.QuoteIdentifier(table);
+        var safeColumn = IdentifierSanitizer.QuoteIdentifier(column);
+        var safeGetColumn = IdentifierSanitizer.QuoteIdentifier(getColumn);
 
-			var scalar = await sel.ExecuteScalarAsync(ct);
-			if (scalar != null && scalar != DBNull.Value)
-				return Convert.ToString(scalar);
-			return null;
-		}
+        using var sel = conn.CreateCommand();
+        sel.CommandText = $"SELECT {safeGetColumn} FROM {safeTable} WHERE {safeColumn} = @columnValue LIMIT 1;";
+        sel.Parameters.AddWithValue("@columnValue", columnValue);
 
-		public async Task<int> GetTotalCountFromTable(SqliteConnection conn, CancellationToken ct, string table)
-		{
-			int total = 0;
+        var scalar = await sel.ExecuteScalarAsync(ct);
+        if (scalar != null && scalar != DBNull.Value)
+            return Convert.ToString(scalar);
+        return null;
+    }
 
-			var cmd = conn.CreateCommand();
-			cmd.CommandText = $"SELECT COUNT(*) FROM {table};";
-			using var reader = await cmd.ExecuteReaderAsync(ct);
+    public async Task<int> GetTotalCountFromTable(SqliteConnection conn, CancellationToken ct, string table)
+    {
+        var safeTable = IdentifierSanitizer.QuoteIdentifier(table);
 
-			if (await reader.ReadAsync(ct))
-			{
-				total = reader.GetInt32(0);
-			}
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = $"SELECT COUNT(*) FROM {safeTable};";
 
-			return total;
-		}
-		public (string filterQuery, List<SqliteParameter> parameters) BuildFilterQuery(string tableName, Dictionary<string, string[]> filters)
-		{
-			if (filters == null || filters.Count == 0)
-			{
-				return (string.Empty, new List<SqliteParameter>());
-			}
+        var result = await cmd.ExecuteScalarAsync(ct);
+        return result != null ? Convert.ToInt32(result) : 0;
+    }
 
-			var parameters = new List<SqliteParameter>();
-			var conditions = new List<string>();
+    public (string filterQuery, List<SqliteParameter> parameters) BuildFilterQuery(
+        string tableName,
+        Dictionary<string, string[]> filters)
+    {
+        if (filters == null || filters.Count == 0)
+        {
+            return (string.Empty, new List<SqliteParameter>());
+        }
 
-			foreach (var filter in filters)
-			{
-				var columnName = filter.Key;
-				var filterValues = filter.Value;
+        var parameters = new List<SqliteParameter>();
+        var conditions = new List<string>();
+        int paramIndex = 0;
 
-				if (filterValues == null || filterValues.Length == 0)
-					continue;
+        foreach (var filter in filters)
+        {
+            var columnName = IdentifierSanitizer.ValidateIdentifier(filter.Key, nameof(filter.Key));
+            var filterValues = filter.Value;
 
-				var parameterNames = new List<string>();
-				for (int i = 0; i < filterValues.Length; i++)
-				{
-					var parameterName = $"@{columnName}Value{i}"; // Create unique parameter name
-					parameterNames.Add(parameterName);
-					parameters.Add(new SqliteParameter(parameterName, $"%{filterValues[i]}%")); // Use LIKE with wildcards
-				}
+            if (filterValues == null || filterValues.Length == 0)
+                continue;
 
-				// Create the LIKE clause for this column
-				var condition = $"{columnName} LIKE {string.Join(" OR ", parameterNames)}";
-				conditions.Add(condition);
-			}
+            var columnConditions = new List<string>();
 
-			// Combine all conditions with AND
-			string filterQuery = " WHERE " + string.Join(" AND ", conditions);
+            foreach (var value in filterValues)
+            {
+                var parameterName = $"@p{paramIndex}";
+                columnConditions.Add($"\"{columnName}\" LIKE {parameterName}");
+                parameters.Add(new SqliteParameter(parameterName, $"%{value}%"));
+                paramIndex++;
+            }
 
-			return (filterQuery, parameters);
-		}
-		public async Task<int> GetTotalCountWithConditions(SqliteConnection conn, CancellationToken ct, string table, Dictionary<string, string[]> filters)
-		{
-			int total = 0;
+            if (columnConditions.Count > 0)
+            {
+                // Group conditions for the same column with OR
+                conditions.Add($"({string.Join(" OR ", columnConditions)})");
+            }
+        }
 
-			// Create the command
-			var cmd = conn.CreateCommand();
-			var queryBuilder = new StringBuilder($"SELECT COUNT(*) FROM {table}");
+        if (conditions.Count == 0)
+            return (string.Empty, new List<SqliteParameter>());
 
+        // Combine all column conditions with AND
+        string filterQuery = " WHERE " + string.Join(" AND ", conditions);
 
-			// Build the filter query and add it to the command
-			var (filterQuery, parameters) = BuildFilterQuery(table, filters);
+        return (filterQuery, parameters);
+    }
 
-			queryBuilder.Append(filterQuery);
-			// Add parameters to the command
-			foreach (var parameter in parameters)
-			{
-				cmd.Parameters.Add(parameter);
-			}
-			cmd.CommandText = queryBuilder.ToString();
-			// Execute the command and get the total count 
-			using var reader = await cmd.ExecuteReaderAsync(ct);
-			if (await reader.ReadAsync(ct))
-			{
-				total = reader.GetInt32(0);
-			}
+    public async Task<int> GetTotalCountWithConditions(
+        SqliteConnection conn,
+        CancellationToken ct,
+        string table,
+        Dictionary<string, string[]> filters)
+    {
+        var safeTable = IdentifierSanitizer.QuoteIdentifier(table);
 
-			return total;
-		}
-	}
-	public class PasswordHasher: IHelperPassword
-	{
-		private const int SaltSize = 16; // 128 bit
-		private const int KeySize = 32;  // 256 bit
+        using var cmd = conn.CreateCommand();
+        var queryBuilder = new StringBuilder($"SELECT COUNT(*) FROM {safeTable}");
+
+        // Build the filter query and add it to the command
+        var (filterQuery, parameters) = BuildFilterQuery(table, filters);
+
+        queryBuilder.Append(filterQuery);
+
+        // Add parameters to the command
+        foreach (var parameter in parameters)
+        {
+            cmd.Parameters.Add(parameter);
+        }
+
+        cmd.CommandText = queryBuilder.ToString();
+
+        // Use ExecuteScalarAsync instead of ExecuteReaderAsync
+        var result = await cmd.ExecuteScalarAsync(ct);
+        return result != null ? Convert.ToInt32(result) : 0;
+    }
+}
+
+public class PasswordHasher : IHelperPassword
+{
+    private const int SaltSize = 16; // 128 bit
+    private const int KeySize = 32;  // 256 bit
 		private const int Iterations = 100_000; // increase for more security
 
-		public (string hash, string salt) HashPassword(string password)
-		{
+    public (string hash, string salt) HashPassword(string password)
+    {
 			// 1. Generate random salt
-			using var rng = RandomNumberGenerator.Create();
-			byte[] saltBytes = new byte[SaltSize];
-			rng.GetBytes(saltBytes);
+        using var rng = RandomNumberGenerator.Create();
+        byte[] saltBytes = new byte[SaltSize];
+        rng.GetBytes(saltBytes);
 
 			// 2. Derive key from password + salt
-			using var pbkdf2 = new Rfc2898DeriveBytes(
-				password,
-				saltBytes,
-				Iterations,
-				HashAlgorithmName.SHA256);
+        using var pbkdf2 = new Rfc2898DeriveBytes(
+            password,
+            saltBytes,
+            Iterations,
+            HashAlgorithmName.SHA256);
 
-			byte[] key = pbkdf2.GetBytes(KeySize);
+        byte[] key = pbkdf2.GetBytes(KeySize);
 
 			// 3. Convert to Base64 strings for storage
-			string salt = Convert.ToBase64String(saltBytes);
-			string hash = Convert.ToBase64String(key);
+        string salt = Convert.ToBase64String(saltBytes);
+        string hash = Convert.ToBase64String(key);
 
-			return (hash, salt);
-		}
+        return (hash, salt);
+    }
 
-		public bool VerifyPassword(string password, string storedHash, string storedSalt)
-		{
+    public bool VerifyPassword(string password, string storedHash, string storedSalt)
+    {
 			// 1. Decode salt
-			byte[] saltBytes = Convert.FromBase64String(storedSalt);
+        byte[] saltBytes = Convert.FromBase64String(storedSalt);
 
 			// 2. Derive key again from provided password + stored salt
-			using var pbkdf2 = new Rfc2898DeriveBytes(
-				password,
-				saltBytes,
-				Iterations,
-				HashAlgorithmName.SHA256);
+        using var pbkdf2 = new Rfc2898DeriveBytes(
+            password,
+            saltBytes,
+            Iterations,
+            HashAlgorithmName.SHA256);
 
-			byte[] key = pbkdf2.GetBytes(KeySize);
-			string hash = Convert.ToBase64String(key);
+        byte[] key = pbkdf2.GetBytes(KeySize);
+        string hash = Convert.ToBase64String(key);
 
-			// 3. Compare hashes (constant-time comparison is better in production)
-			return hash == storedHash;
-		}
-	}
+        // Use constant-time comparison
+        return CryptographicOperations.FixedTimeEquals(
+            Convert.FromBase64String(hash),
+            Convert.FromBase64String(storedHash));
+    }
 }
